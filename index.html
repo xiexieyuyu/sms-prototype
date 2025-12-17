@@ -178,6 +178,31 @@
     .toast.show { display: block; }
     .toast-success { border-left: 4px solid #52C41A; }
     .toast-error { border-left: 4px solid #FF4D4F; }
+    .price-notification-bubble { position: fixed; bottom: 0; left: 0; width: 240px; z-index: 999; background: #fff; border-right: 1px solid #F0F0F0; }
+    .price-notification-toggle { display: none; }
+    .price-notification-toggle:hover { }
+    .price-notification-toggle .icon { }
+    .price-notification-badge { display: none; }
+    .price-notification-panel { position: relative; bottom: auto; left: auto; width: 100%; background: #fff; border-radius: 0; box-shadow: none; display: block; overflow: hidden; border-top: 1px solid #F0F0F0; }
+    .price-notification-panel.active { display: block; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .price-notification-header { padding: 12px 16px; background: linear-gradient(135deg, #FF6B6B 0%, #FF4D4F 100%); color: #fff; }
+    .price-notification-header-title { font-size: 13px; font-weight: bold; }
+    .price-notification-header-subtitle { font-size: 11px; opacity: 0.9; margin-top: 2px; }
+    .price-notification-list { max-height: 200px; overflow-y: auto; }
+    .price-notification-item { padding: 10px 12px; border-bottom: 1px solid #F0F0F0; cursor: pointer; transition: background 0.2s; }
+    .price-notification-item:hover { background: #FFF7E6; }
+    .price-notification-item:last-child { border-bottom: none; }
+    .price-notification-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .price-notification-item-product { font-weight: bold; color: #262626; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+    .price-notification-item-date { font-size: 10px; color: #8C8C8C; }
+    .price-notification-item-price { display: flex; align-items: center; gap: 6px; }
+    .price-notification-item-old { color: #8C8C8C; text-decoration: line-through; font-size: 12px; }
+    .price-notification-item-arrow { color: #FF4D4F; font-size: 12px; }
+    .price-notification-item-new { color: #FF4D4F; font-weight: bold; font-size: 13px; }
+    .price-notification-item-reason { font-size: 11px; color: #595959; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .price-attachment { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #F5F6FA; border-radius: 4px; font-size: 11px; color: #1890FF; cursor: pointer; margin-right: 4px; margin-top: 4px; }
+    .price-attachment:hover { background: #E6F7FF; }
     @media (max-width: 1200px) { .stat-cards { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 1024px) { .topbar-menu-toggle { display: block; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .main-content { margin-left: 0; } .login-brand { display: none; } .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } .info-grid, .form-row, .form-row-3 { grid-template-columns: 1fr; } }
     @media (max-width: 768px) { .topbar { padding: 0 16px; } .topbar-username, .topbar-role { display: none; } .main-content { padding: 16px; } .card-body { padding: 16px; } .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .filter-row { flex-direction: column; } .filter-item { width: 100%; } .stat-cards { grid-template-columns: 1fr; } }
@@ -186,6 +211,15 @@
 <body>
   <div id="app"></div>
   <div id="toast" class="toast"></div>
+  <div id="priceNotificationBubble" class="price-notification-bubble" style="display: none;">
+    <div class="price-notification-panel active" id="priceNotificationPanel">
+      <div class="price-notification-header">
+        <div class="price-notification-header-title">📊 价格变更通知</div>
+        <div class="price-notification-header-subtitle">最近5次出厂价调整</div>
+      </div>
+      <div class="price-notification-list" id="priceNotificationList"></div>
+    </div>
+  </div>
   <div id="clientModeModal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header"><div class="modal-title">🔒 关闭客户演示模式</div></div>
@@ -274,18 +308,18 @@
         { id: 3, name: "广东小家电制造股份有限公司", icon: "🏭", rating: 4, established: 2010, location: { province: "广东省", city: "佛山市", district: "顺德区" }, address: "广东省佛山市顺德区容桂街道华口工业区振华路28号", mainCategories: ["空气炸锅", "电烤箱"], cooperatedBrands: ["Midea", "Galanz"], factoryCerts: ["ISO 9001", "BSCI"], productComplianceExperience: ["CE", "RoHS", "CB"], productCount: 2, cooperationYears: 4, avgLeadTime: 35, media: [{ type: "image", title: "厂区全景", url: "🏭" }, { type: "image", title: "研发中心", url: "💡" }], adminOnly: { legalPerson: "张伟强", capitalCNY: 12000000, employeesRange: { min: 200, max: 500 }, contact: { person: "张总", position: "总经理", phone: "0757-2888-6666", mobile: "136-0000-9999", email: "zhang@gdappliance.com" } } }
       ],
       products: [
-        { id: 1, sku: "VC-5000", name: "无线手持吸尘器 Pro", categoryId: 11, brand: "CleanPro", tags: ["热销", "OEM可定制", "CE认证"], status: "在售", vendorId: 1, moq: 500, factoryPrice: 22, marketGuidePrice: 25.3, benchmarkProduct: "Shark Navigator NV360", benchmarkContext: "Navigator是美国市场最受欢迎的立式吸尘器之一", media: [{ type: "image", title: "产品主图", url: "🌪️" }, { type: "image", title: "产品侧面", url: "📷" }, { type: "video", title: "产品演示视频", url: "🎬" }], datasheets: [{ name: "产品规格书", filename: "VC-5000-Spec.pdf", icon: "📄" }, { name: "用户手册", filename: "VC-5000-Manual.pdf", icon: "📘" }], specs: { power: { value: 120, unit: "W" }, battery_capacity: { value: 2500, unit: "mAh" }, voltage: { value: 22, unit: "V" }, runtime: { value: 45, unit: "min" }, dust_capacity: { value: 500, unit: "ml" }, weight: { value: 1.5, unit: "kg" }, noise_level: { value: 68, unit: "dB" } }, certifications: [{ name: "CE", code: "CE-2024-001", public: true, fileIcon: "📜" }, { name: "RoHS", code: "RoHS-2024-002", public: true, fileIcon: "📜" }, { name: "UL", code: "UL-2024-004", public: false, fileIcon: "📜" }], salesRestrictions: [{ country: "US", client: "Home Depot" }, { country: "EU", client: "MediaMarkt" }], internalNotes: { collaboration: [{ type: "info", icon: "💡", title: "市场反馈", content: "客户反馈电池续航表现优异" }], sensitive: [{ type: "warning", icon: "🔒", title: "成本机密", content: "出厂价$22.00为机密信息" }] } },
-        { id: 2, sku: "JM-2000", name: "多功能破壁料理机", categoryId: 2, brand: "JoyMix", tags: ["热销", "CE认证"], status: "在售", vendorId: 2, moq: 300, factoryPrice: 45, marketGuidePrice: 51.75, benchmarkProduct: "Vitamix E310", benchmarkContext: "E310是Vitamix入门级破壁机", media: [{ type: "image", title: "产品主图", url: "🥤" }, { type: "image", title: "配件展示", url: "📷" }], datasheets: [{ name: "产品规格书", filename: "JM-2000-Spec.pdf", icon: "📄" }], specs: { power: { value: 1500, unit: "W" }, capacity: { value: 2000, unit: "ml" }, voltage: { value: 220, unit: "V" }, speed: { value: 30000, unit: "RPM" }, weight: { value: 3.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-011", public: true, fileIcon: "📜" }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
-        { id: 3, sku: "AF-3500", name: "智能空气炸锅 3.5L", categoryId: 6, brand: "AirFry Pro", tags: ["新品", "独家", "CE认证"], status: "在售", vendorId: 3, moq: 500, factoryPrice: 38, marketGuidePrice: 43.7, benchmarkProduct: "Philips HD9252", benchmarkContext: "HD9252是飞利浦经典款空气炸锅", media: [{ type: "image", title: "产品主图", url: "🍟" }, { type: "video", title: "烹饪演示", url: "🎬" }], datasheets: [{ name: "产品规格书", filename: "AF-3500-Spec.pdf", icon: "📄" }], specs: { power: { value: 1800, unit: "W" }, capacity: { value: 3500, unit: "ml" }, voltage: { value: 220, unit: "V" }, temp_range: "80-200°C", weight: { value: 4.2, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-021", public: true, fileIcon: "📜" }], salesRestrictions: [{ country: "EU", client: "MediaMarkt" }], internalNotes: { collaboration: [], sensitive: [{ type: "warning", icon: "🔒", title: "独家协议", content: "MediaMarkt有欧盟市场独家销售权" }] } },
-        { id: 4, sku: "CM-800", name: "全自动意式咖啡机", categoryId: 5, brand: "BrewMaster", tags: ["热销", "CE认证"], status: "在售", vendorId: 1, moq: 200, factoryPrice: 85, marketGuidePrice: 97.75, benchmarkProduct: "DeLonghi Magnifica", benchmarkContext: "Magnifica是德龙入门级全自动咖啡机", media: [{ type: "image", url: "☕" }], specs: { power: { value: 1200, unit: "W" }, capacity: { value: 800, unit: "ml" }, voltage: { value: 220, unit: "V" }, weight: { value: 2.8, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-031", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
-        { id: 5, sku: "SM-1200", name: "智能蒸汽拖把", categoryId: 13, brand: "SteamClean", tags: ["新品", "环保", "CE认证"], status: "在售", vendorId: 1, moq: 400, factoryPrice: 32, marketGuidePrice: 36.8, benchmarkProduct: "Shark Steam Mop", benchmarkContext: "Shark Steam Mop是美国市场热销的蒸汽拖把", media: [{ type: "image", url: "🧹" }], specs: { power: { value: 1500, unit: "W" }, weight: { value: 2.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-041", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
-        { id: 6, sku: "RV-2000", name: "智能扫地机器人", categoryId: 12, brand: "RoboVac", tags: ["热销", "静音", "CE认证"], status: "在售", vendorId: 1, moq: 300, factoryPrice: 120, marketGuidePrice: 138, benchmarkProduct: "iRobot Roomba 694", benchmarkContext: "Roomba 694是iRobot入门级扫地机器人", media: [{ type: "image", url: "🤖" }], specs: { power: { value: 25, unit: "W" }, battery_capacity: { value: 2600, unit: "mAh" }, voltage: { value: 14.4, unit: "V" }, runtime: { value: 90, unit: "min" }, dust_capacity: { value: 600, unit: "ml" }, weight: { value: 2.8, unit: "kg" }, noise_level: { value: 55, unit: "dB" } }, certifications: [{ name: "CE", code: "CE-2024-051", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
-        { id: 7, sku: "BM-500", name: "便携式榨汁杯", categoryId: 2, brand: "BlendMini", tags: ["新品", "CE认证"], status: "在售", vendorId: 2, moq: 500, factoryPrice: 12, marketGuidePrice: 13.8, benchmarkProduct: "BlendJet 2", benchmarkContext: "BlendJet 2是美国热销的便携式榨汁杯", media: [{ type: "image", url: "🥤" }], specs: { power: { value: 60, unit: "W" }, capacity: { value: 500, unit: "ml" }, voltage: { value: 7.4, unit: "V" }, speed: { value: 20000, unit: "RPM" }, weight: { value: 0.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-061", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
-        { id: 8, sku: "FC-800", name: "布艺清洗机", categoryId: 14, brand: "FabricCare", tags: ["新品", "CE认证"], status: "在售", vendorId: 3, moq: 300, factoryPrice: 55, marketGuidePrice: 63.25, benchmarkProduct: "Bissell SpotClean", benchmarkContext: "Bissell SpotClean是美国市场热销的布艺清洗机", media: [{ type: "image", url: "🧽" }], specs: { power: { value: 500, unit: "W" }, weight: { value: 4.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-071", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } }
+        { id: 1, sku: "VC-5000", name: "无线手持吸尘器 Pro", categoryId: 11, brand: "CleanPro", tags: ["热销", "OEM可定制", "CE认证"], status: "在售", vendorId: 1, moq: 500, factoryPrice: 22, marketGuidePrice: 25.3, priceHistory: [{ price: 22, effectiveDate: "2024-09-01", operator: "admin", reason: "供应商降价", attachments: [{ name: "报价单-202409.pdf", icon: "📄" }, { name: "微信聊天记录.png", icon: "🖼️" }] }, { price: 24, effectiveDate: "2024-03-15", operator: "admin", reason: "原材料成本上涨", expiredDate: "2024-08-31", attachments: [{ name: "涨价通知函.pdf", icon: "📄" }] }, { price: 20, effectiveDate: "2023-06-01", operator: "admin", reason: "初始定价", expiredDate: "2024-03-14", attachments: [] }], benchmarkProduct: "Shark Navigator NV360", benchmarkContext: "Navigator是美国市场最受欢迎的立式吸尘器之一", media: [{ type: "image", title: "产品主图", url: "🌪️" }, { type: "image", title: "产品侧面", url: "📷" }, { type: "video", title: "产品演示视频", url: "🎬" }], datasheets: [{ name: "产品规格书", filename: "VC-5000-Spec.pdf", icon: "📄" }, { name: "用户手册", filename: "VC-5000-Manual.pdf", icon: "📘" }], specs: { power: { value: 120, unit: "W" }, battery_capacity: { value: 2500, unit: "mAh" }, voltage: { value: 22, unit: "V" }, runtime: { value: 45, unit: "min" }, dust_capacity: { value: 500, unit: "ml" }, weight: { value: 1.5, unit: "kg" }, noise_level: { value: 68, unit: "dB" } }, certifications: [{ name: "CE", code: "CE-2024-001", public: true, fileIcon: "📜" }, { name: "RoHS", code: "RoHS-2024-002", public: true, fileIcon: "📜" }, { name: "UL", code: "UL-2024-004", public: false, fileIcon: "📜" }], salesRestrictions: [{ country: "US", client: "Home Depot" }, { country: "EU", client: "MediaMarkt" }], internalNotes: { collaboration: [{ type: "info", icon: "💡", title: "市场反馈", content: "客户反馈电池续航表现优异" }], sensitive: [{ type: "warning", icon: "🔒", title: "成本机密", content: "出厂价$22.00为机密信息" }] } },
+        { id: 2, sku: "JM-2000", name: "多功能破壁料理机", categoryId: 2, brand: "JoyMix", tags: ["热销", "CE认证"], status: "在售", vendorId: 2, moq: 300, factoryPrice: 45, marketGuidePrice: 51.75, priceHistory: [{ price: 45, effectiveDate: "2024-06-01", operator: "admin", reason: "年度价格调整", attachments: [{ name: "2024年度报价单.xlsx", icon: "📊" }] }, { price: 42, effectiveDate: "2023-01-01", operator: "admin", reason: "初始定价", expiredDate: "2024-05-31", attachments: [] }], benchmarkProduct: "Vitamix E310", benchmarkContext: "E310是Vitamix入门级破壁机", media: [{ type: "image", title: "产品主图", url: "🥤" }, { type: "image", title: "配件展示", url: "📷" }], datasheets: [{ name: "产品规格书", filename: "JM-2000-Spec.pdf", icon: "📄" }], specs: { power: { value: 1500, unit: "W" }, capacity: { value: 2000, unit: "ml" }, voltage: { value: 220, unit: "V" }, speed: { value: 30000, unit: "RPM" }, weight: { value: 3.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-011", public: true, fileIcon: "📜" }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 3, sku: "AF-3500", name: "智能空气炸锅 3.5L", categoryId: 6, brand: "AirFry Pro", tags: ["新品", "独家", "CE认证"], status: "在售", vendorId: 3, moq: 500, factoryPrice: 38, marketGuidePrice: 43.7, priceHistory: [{ price: 38, effectiveDate: "2024-01-15", operator: "admin", reason: "新品上架定价", attachments: [] }], benchmarkProduct: "Philips HD9252", benchmarkContext: "HD9252是飞利浦经典款空气炸锅", media: [{ type: "image", title: "产品主图", url: "🍟" }, { type: "video", title: "烹饪演示", url: "🎬" }], datasheets: [{ name: "产品规格书", filename: "AF-3500-Spec.pdf", icon: "📄" }], specs: { power: { value: 1800, unit: "W" }, capacity: { value: 3500, unit: "ml" }, voltage: { value: 220, unit: "V" }, temp_range: "80-200°C", weight: { value: 4.2, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-021", public: true, fileIcon: "📜" }], salesRestrictions: [{ country: "EU", client: "MediaMarkt" }], internalNotes: { collaboration: [], sensitive: [{ type: "warning", icon: "🔒", title: "独家协议", content: "MediaMarkt有欧盟市场独家销售权" }] } },
+        { id: 4, sku: "CM-800", name: "全自动意式咖啡机", categoryId: 5, brand: "BrewMaster", tags: ["热销", "CE认证"], status: "在售", vendorId: 1, moq: 200, factoryPrice: 85, marketGuidePrice: 97.75, priceHistory: [{ price: 85, effectiveDate: "2024-01-01", operator: "admin", reason: "初始定价" }], benchmarkProduct: "DeLonghi Magnifica", benchmarkContext: "Magnifica是德龙入门级全自动咖啡机", media: [{ type: "image", url: "☕" }], specs: { power: { value: 1200, unit: "W" }, capacity: { value: 800, unit: "ml" }, voltage: { value: 220, unit: "V" }, weight: { value: 2.8, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-031", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 5, sku: "SM-1200", name: "智能蒸汽拖把", categoryId: 13, brand: "SteamClean", tags: ["新品", "环保", "CE认证"], status: "在售", vendorId: 1, moq: 400, factoryPrice: 32, marketGuidePrice: 36.8, priceHistory: [{ price: 32, effectiveDate: "2024-02-01", operator: "admin", reason: "初始定价" }], benchmarkProduct: "Shark Steam Mop", benchmarkContext: "Shark Steam Mop是美国市场热销的蒸汽拖把", media: [{ type: "image", url: "🧹" }], specs: { power: { value: 1500, unit: "W" }, weight: { value: 2.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-041", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 6, sku: "RV-2000", name: "智能扫地机器人", categoryId: 12, brand: "RoboVac", tags: ["热销", "静音", "CE认证"], status: "在售", vendorId: 1, moq: 300, factoryPrice: 120, marketGuidePrice: 138, priceHistory: [{ price: 120, effectiveDate: "2024-04-01", operator: "admin", reason: "初始定价" }], benchmarkProduct: "iRobot Roomba 694", benchmarkContext: "Roomba 694是iRobot入门级扫地机器人", media: [{ type: "image", url: "🤖" }], specs: { power: { value: 25, unit: "W" }, battery_capacity: { value: 2600, unit: "mAh" }, voltage: { value: 14.4, unit: "V" }, runtime: { value: 90, unit: "min" }, dust_capacity: { value: 600, unit: "ml" }, weight: { value: 2.8, unit: "kg" }, noise_level: { value: 55, unit: "dB" } }, certifications: [{ name: "CE", code: "CE-2024-051", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 7, sku: "BM-500", name: "便携式榨汁杯", categoryId: 2, brand: "BlendMini", tags: ["新品", "CE认证"], status: "在售", vendorId: 2, moq: 500, factoryPrice: 12, marketGuidePrice: 13.8, priceHistory: [{ price: 12, effectiveDate: "2024-05-01", operator: "admin", reason: "初始定价" }], benchmarkProduct: "BlendJet 2", benchmarkContext: "BlendJet 2是美国热销的便携式榨汁杯", media: [{ type: "image", url: "🥤" }], specs: { power: { value: 60, unit: "W" }, capacity: { value: 500, unit: "ml" }, voltage: { value: 7.4, unit: "V" }, speed: { value: 20000, unit: "RPM" }, weight: { value: 0.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-061", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 8, sku: "FC-800", name: "布艺清洗机", categoryId: 14, brand: "FabricCare", tags: ["新品", "CE认证"], status: "在售", vendorId: 3, moq: 300, factoryPrice: 55, marketGuidePrice: 63.25, priceHistory: [{ price: 55, effectiveDate: "2024-03-01", operator: "admin", reason: "初始定价" }], benchmarkProduct: "Bissell SpotClean", benchmarkContext: "Bissell SpotClean是美国市场热销的布艺清洗机", media: [{ type: "image", url: "🧽" }], specs: { power: { value: 500, unit: "W" }, weight: { value: 4.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-071", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } }
       ]
     };
 
-    const state = { currentUser: null, currentRole: null, isClientMode: false, selectedProductIds: [], lastNonClientHash: "", sidebarOpen: false, filters: { search: "", categoryId: "" }, editingItem: null, editingType: null, editingParams: [], editingVendorMedia: [], editingProductMedia: [], editingProductDatasheets: [], editingProductCerts: [] };
+    const state = { currentUser: null, currentRole: null, isClientMode: false, selectedProductIds: [], lastNonClientHash: "", sidebarOpen: false, filters: { search: "", categoryId: "" }, editingItem: null, editingType: null, editingParams: [], editingVendorMedia: [], editingProductMedia: [], editingProductDatasheets: [], editingProductCerts: [], editingPriceAttachments: [] };
 
     function getCategoryById(id) { return db.categories.find(c => c.id === id); }
     function getVendorById(id) { return db.vendors.find(v => v.id === parseInt(id)); }
@@ -298,6 +332,59 @@
     function formatMoney(n) { return "¥" + (n / 10000).toFixed(0) + "万"; }
     function getTagColor(name) { var t = getTagByName(name); return t ? { color: t.color, bgColor: t.bgColor } : { color: "#8C8C8C", bgColor: "#FAFAFA" }; }
     function showToast(msg, type) { var t = document.getElementById("toast"); t.textContent = msg; t.className = "toast show toast-" + (type || "success"); setTimeout(function() { t.classList.remove("show"); }, 3000); }
+
+    function getRecentPriceChanges() {
+      var changes = [];
+      db.products.forEach(function(product) {
+        if (product.priceHistory && product.priceHistory.length > 0) {
+          product.priceHistory.forEach(function(h, idx) {
+            var prevPrice = idx < product.priceHistory.length - 1 ? product.priceHistory[idx + 1].price : null;
+            changes.push({
+              productId: product.id,
+              productName: product.name,
+              sku: product.sku,
+              newPrice: h.price,
+              oldPrice: prevPrice,
+              effectiveDate: h.effectiveDate,
+              operator: h.operator,
+              reason: h.reason,
+              attachments: h.attachments || []
+            });
+          });
+        }
+      });
+      changes.sort(function(a, b) { return new Date(b.effectiveDate) - new Date(a.effectiveDate); });
+      return changes.slice(0, 5);
+    }
+
+    function togglePriceNotification() {
+      // 保留函数但不再需要
+    }
+
+    function renderPriceNotifications() {
+      if (state.currentRole !== "admin") {
+        document.getElementById("priceNotificationBubble").style.display = "none";
+        return;
+      }
+      document.getElementById("priceNotificationBubble").style.display = "block";
+      var changes = getRecentPriceChanges();
+      var html = "";
+      if (changes.length === 0) {
+        html = '<div style="padding: 16px; text-align: center; color: #8C8C8C; font-size: 12px;">暂无价格变更记录</div>';
+      } else {
+        changes.forEach(function(c) {
+          var priceChange = c.oldPrice ? (c.newPrice > c.oldPrice ? '↑' : (c.newPrice < c.oldPrice ? '↓' : '→')) : '🆕';
+          html += '<div class="price-notification-item" onclick="navigate(\'#/product/' + c.productId + '\')">';
+          html += '<div class="price-notification-item-header"><span class="price-notification-item-product" title="' + c.productName + '">' + c.productName + '</span><span class="price-notification-item-date">' + c.effectiveDate + '</span></div>';
+          html += '<div class="price-notification-item-price">';
+          if (c.oldPrice) html += '<span class="price-notification-item-old">' + formatPrice(c.oldPrice) + '</span><span class="price-notification-item-arrow">' + priceChange + '</span>';
+          html += '<span class="price-notification-item-new">' + formatPrice(c.newPrice) + '</span></div>';
+          html += '<div class="price-notification-item-reason" title="' + c.reason + '">' + c.reason + '</div>';
+          html += '</div>';
+        });
+      }
+      document.getElementById("priceNotificationList").innerHTML = html;
+    }
 
     function filterByRole(item, type) {
       var effectiveRole = state.isClientMode ? "client" : state.currentRole;
@@ -365,6 +452,7 @@
       else if (matchRoute(hash, "#/vendor-edit/:id") || hash === "#/vendor-edit") renderVendorEdit(params.id);
       else if (matchRoute(hash, "#/settings/:key")) renderSettings(params.key);
       else render404();
+      renderPriceNotifications();
     }
 
     function login(username, password) { var user = db.users.find(function(u) { return u.username === username && u.demoPassword === password; }); if (user) { state.currentUser = user; state.currentRole = user.role; navigate(user.role === "sales" ? "#/sales/products" : "#/products"); } else { return "用户名或密码错误"; } }
@@ -519,6 +607,22 @@
         if (mode === "admin" && p.factoryPrice) html += '<div class="alert alert-error"><div style="font-weight: bold;">🔒 出厂价(机密)</div><div style="font-size: 24px; color: #FF4D4F; font-weight: bold; margin-top: 8px;">' + formatPrice(p.factoryPrice) + '</div><div style="font-size: 12px; color: #8C8C8C; margin-top: 4px;">MOQ: ' + p.moq + ' pcs</div></div>';
         html += '</div>';
       }
+      if (mode === "admin" && p.priceHistory && p.priceHistory.length > 0) {
+        html += '<div class="section"><div class="section-title">📊 出厂价变更历史 <span style="font-size: 12px; font-weight: normal; color: #8C8C8C;">(' + p.priceHistory.length + '条记录)</span></div>';
+        html += '<div style="background: #FFFBE6; border: 1px solid #FFE58F; border-radius: 8px; overflow: hidden;">';
+        html += '<table style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr style="background: #FFF7E6;"><th style="padding: 10px; text-align: left; border-bottom: 1px solid #FFE58F;">价格</th><th style="padding: 10px; text-align: left; border-bottom: 1px solid #FFE58F;">生效日期</th><th style="padding: 10px; text-align: left; border-bottom: 1px solid #FFE58F;">失效日期</th><th style="padding: 10px; text-align: left; border-bottom: 1px solid #FFE58F;">操作人</th><th style="padding: 10px; text-align: left; border-bottom: 1px solid #FFE58F;">变更原因</th><th style="padding: 10px; text-align: left; border-bottom: 1px solid #FFE58F;">附件凭证</th></tr></thead><tbody>';
+        p.priceHistory.forEach(function(h, idx) {
+          var isActive = idx === 0 && !h.expiredDate;
+          var attachHtml = '';
+          if (h.attachments && h.attachments.length > 0) {
+            h.attachments.forEach(function(att) { attachHtml += '<span class="price-attachment">' + (att.icon || '📎') + ' ' + att.name + '</span>'; });
+          } else {
+            attachHtml = '<span style="color: #8C8C8C;">-</span>';
+          }
+          html += '<tr style="' + (isActive ? 'background: #F6FFED;' : '') + '"><td style="padding: 10px; border-bottom: 1px solid #FFE58F;"><strong style="color: ' + (isActive ? '#52C41A' : '#8C8C8C') + ';">' + formatPrice(h.price) + '</strong>' + (isActive ? ' <span class="tag tag-green" style="font-size: 10px;">当前生效</span>' : ' <span class="tag tag-gray" style="font-size: 10px;">已失效</span>') + '</td><td style="padding: 10px; border-bottom: 1px solid #FFE58F;">' + h.effectiveDate + '</td><td style="padding: 10px; border-bottom: 1px solid #FFE58F; color: ' + (h.expiredDate ? '#FF4D4F' : '#52C41A') + ';">' + (h.expiredDate || '至今有效') + '</td><td style="padding: 10px; border-bottom: 1px solid #FFE58F;">' + h.operator + '</td><td style="padding: 10px; border-bottom: 1px solid #FFE58F;">' + h.reason + '</td><td style="padding: 10px; border-bottom: 1px solid #FFE58F;">' + attachHtml + '</td></tr>';
+        });
+        html += '</tbody></table></div></div>';
+      }
       if (mode !== "client" && p.benchmarkProduct) html += '<div class="section"><div class="section-title">🎯 竞品对标</div><div class="alert alert-info"><div style="font-weight: bold;">对标产品: ' + p.benchmarkProduct + '</div>' + (p.benchmarkContext ? '<div style="margin-top: 8px;">' + p.benchmarkContext + '</div>' : "") + '</div></div>';
       if (mode === "admin" && p.salesRestrictions && p.salesRestrictions.length) { html += '<div class="section"><div class="section-title">🚫 销售限制</div><div class="alert alert-warning">'; p.salesRestrictions.forEach(function(r) { html += '<div style="padding: 4px 0;"><strong>' + r.country + '</strong> - ' + r.client + '</div>'; }); html += '</div></div>'; }
       if (template) {
@@ -557,7 +661,20 @@
       html += '<div class="form-row"><div class="form-group"><label class="form-label">供应商</label><select id="productVendor" class="form-select"><option value="">请选择供应商</option>';
       db.vendors.forEach(function(v) { html += '<option value="' + v.id + '"' + (product && product.vendorId === v.id ? " selected" : "") + '>' + v.name + '</option>'; });
       html += '</select></div><div class="form-group"><label class="form-label">状态</label><select id="productStatus" class="form-select"><option value="在售"' + (product && product.status === "在售" ? " selected" : "") + '>在售</option><option value="停售"' + (product && product.status === "停售" ? " selected" : "") + '>停售</option><option value="开发中"' + (product && product.status === "开发中" ? " selected" : "") + '>开发中</option></select></div></div>';
-      html += '<div class="form-row-3"><div class="form-group"><label class="form-label">出厂价 (USD)</label><input type="number" step="0.01" id="productFactoryPrice" class="form-input" value="' + (product && product.factoryPrice ? product.factoryPrice : '') + '"></div><div class="form-group"><label class="form-label">市场指导价 (USD)</label><input type="number" step="0.01" id="productMarketPrice" class="form-input" value="' + (product && product.marketGuidePrice ? product.marketGuidePrice : '') + '"></div><div class="form-group"><label class="form-label">MOQ</label><input type="number" id="productMoq" class="form-input" value="' + (product && product.moq ? product.moq : '') + '"></div></div>';
+      html += '<div class="form-row-3"><div class="form-group"><label class="form-label">出厂价 (USD)</label><input type="number" step="0.01" id="productFactoryPrice" class="form-input" value="' + (product && product.factoryPrice ? product.factoryPrice : '') + '" data-original-price="' + (product && product.factoryPrice ? product.factoryPrice : '') + '" onchange="checkPriceChange()"></div><div class="form-group"><label class="form-label">市场指导价 (USD)</label><input type="number" step="0.01" id="productMarketPrice" class="form-input" value="' + (product && product.marketGuidePrice ? product.marketGuidePrice : '') + '"></div><div class="form-group"><label class="form-label">MOQ</label><input type="number" id="productMoq" class="form-input" value="' + (product && product.moq ? product.moq : '') + '"></div></div>';
+      html += '<div id="priceChangeReasonContainer" style="display: none;"><div class="alert alert-warning" style="margin: 12px 0;"><div style="font-weight: bold; margin-bottom: 8px;">⚠️ 出厂价变更需要填写原因并上传凭证</div><div class="form-group"><label class="form-label form-label-required">变更原因</label><input type="text" id="priceChangeReason" class="form-input" placeholder="请输入价格变更原因，如：供应商涨价、原材料成本变化等"></div><div class="form-group" style="margin-bottom: 0;"><label class="form-label">附件凭证 <span style="font-weight: normal; color: #8C8C8C;">(报价单、聊天截图等)</span></label><div id="priceChangeAttachments"></div><button type="button" class="btn btn-sm btn-default" onclick="addPriceChangeAttachment()" style="margin-top: 8px;">📎 添加附件</button></div></div></div>';
+      if (product && product.priceHistory && product.priceHistory.length > 0) {
+        html += '<div class="section" style="margin: 16px 0; padding: 16px; background: #FFFBE6; border: 1px solid #FFE58F; border-radius: 8px;"><div class="section-title" style="margin-bottom: 12px;">📊 出厂价变更历史</div><table style="width: 100%; border-collapse: collapse; font-size: 13px;"><thead><tr style="background: #FFF7E6;"><th style="padding: 8px; text-align: left; border-bottom: 1px solid #FFE58F;">价格</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #FFE58F;">生效日期</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #FFE58F;">失效日期</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #FFE58F;">操作人</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #FFE58F;">变更原因</th><th style="padding: 8px; text-align: left; border-bottom: 1px solid #FFE58F;">附件</th></tr></thead><tbody>';
+        product.priceHistory.forEach(function(h, idx) {
+          var isActive = idx === 0 && !h.expiredDate;
+          var attHtml = '';
+          if (h.attachments && h.attachments.length > 0) {
+            h.attachments.forEach(function(a) { attHtml += '<span class="price-attachment">' + a.icon + ' ' + a.name + '</span>'; });
+          } else { attHtml = '-'; }
+          html += '<tr style="' + (isActive ? 'background: #F6FFED;' : '') + '"><td style="padding: 8px; border-bottom: 1px solid #FFE58F;"><strong style="color: ' + (isActive ? '#52C41A' : '#8C8C8C') + ';">' + formatPrice(h.price) + '</strong>' + (isActive ? ' <span class="tag tag-green" style="font-size: 10px;">当前</span>' : '') + '</td><td style="padding: 8px; border-bottom: 1px solid #FFE58F;">' + h.effectiveDate + '</td><td style="padding: 8px; border-bottom: 1px solid #FFE58F; color: ' + (h.expiredDate ? '#FF4D4F' : '#52C41A') + ';">' + (h.expiredDate || '至今有效') + '</td><td style="padding: 8px; border-bottom: 1px solid #FFE58F;">' + h.operator + '</td><td style="padding: 8px; border-bottom: 1px solid #FFE58F;">' + h.reason + '</td><td style="padding: 8px; border-bottom: 1px solid #FFE58F;">' + attHtml + '</td></tr>';
+        });
+        html += '</tbody></table></div>';
+      }
       html += '<div class="form-group"><label class="form-label">标签</label><div style="display: flex; gap: 12px; flex-wrap: wrap;">';
       db.tags.forEach(function(t) { html += '<label class="checkbox-item"><input type="checkbox" name="productTags" value="' + t.name + '"' + (product && product.tags && product.tags.indexOf(t.name) !== -1 ? " checked" : "") + '><span class="tag" style="background: ' + t.bgColor + '; color: ' + t.color + '">' + t.name + '</span></label>'; });
       html += '</div></div>';
@@ -701,6 +818,57 @@
       return specs;
     }
 
+    function checkPriceChange() {
+      var input = document.getElementById("productFactoryPrice");
+      var originalPrice = parseFloat(input.getAttribute("data-original-price")) || 0;
+      var newPrice = parseFloat(input.value) || 0;
+      var container = document.getElementById("priceChangeReasonContainer");
+      if (originalPrice !== newPrice && originalPrice > 0) {
+        container.style.display = "block";
+        document.getElementById("priceChangeReason").required = true;
+        state.editingPriceAttachments = [];
+        renderPriceChangeAttachments();
+      } else {
+        container.style.display = "none";
+        document.getElementById("priceChangeReason").required = false;
+        state.editingPriceAttachments = [];
+      }
+    }
+
+    function renderPriceChangeAttachments() {
+      var container = document.getElementById("priceChangeAttachments");
+      if (!container) return;
+      if (state.editingPriceAttachments.length === 0) {
+        container.innerHTML = '<div style="color: #8C8C8C; font-size: 12px;">暂无附件</div>';
+        return;
+      }
+      var html = '<div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">';
+      state.editingPriceAttachments.forEach(function(att, idx) {
+        html += '<div style="display: flex; align-items: center; gap: 6px; background: #F5F6FA; padding: 6px 10px; border-radius: 4px;">';
+        html += '<span>' + att.icon + '</span><span style="font-size: 12px;">' + att.name + '</span>';
+        html += '<span onclick="removePriceChangeAttachment(' + idx + ')" style="cursor: pointer; color: #FF4D4F; font-size: 14px;">×</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function addPriceChangeAttachment() {
+      var icons = ['📄', '🖼️', '📊', '📝'];
+      var types = ['报价单.pdf', '聊天截图.png', '价格确认函.xlsx', '邮件记录.pdf'];
+      var randomIdx = Math.floor(Math.random() * icons.length);
+      var fileName = prompt('请输入附件文件名：', types[randomIdx]);
+      if (fileName) {
+        state.editingPriceAttachments.push({ name: fileName, icon: fileName.endsWith('.png') || fileName.endsWith('.jpg') ? '🖼️' : fileName.endsWith('.xlsx') ? '📊' : '📄' });
+        renderPriceChangeAttachments();
+      }
+    }
+
+    function removePriceChangeAttachment(idx) {
+      state.editingPriceAttachments.splice(idx, 1);
+      renderPriceChangeAttachments();
+    }
+
     function saveProduct(id) {
       var name = document.getElementById("productName").value;
       var sku = document.getElementById("productSku").value;
@@ -718,9 +886,52 @@
       var media = state.editingProductMedia.filter(function(m) { return m.title; });
       var datasheets = state.editingProductDatasheets.filter(function(d) { return d.name; });
       var certifications = state.editingProductCerts.filter(function(c) { return c.name; });
-      if (id) { var product = getProductById(id); if (product) { Object.assign(product, { name: name, sku: sku, brand: brand, categoryId: categoryId, vendorId: vendorId, status: status, factoryPrice: factoryPrice, marketGuidePrice: marketGuidePrice, moq: moq, benchmarkProduct: benchmarkProduct, benchmarkContext: benchmarkContext, tags: tags, specs: specs, media: media, datasheets: datasheets, certifications: certifications }); showToast("产品更新成功！"); } }
-      else { var newProduct = { id: getNextId(db.products), name: name, sku: sku, brand: brand, categoryId: categoryId, vendorId: vendorId, status: status, factoryPrice: factoryPrice, marketGuidePrice: marketGuidePrice, moq: moq, benchmarkProduct: benchmarkProduct, benchmarkContext: benchmarkContext, tags: tags, media: media.length > 0 ? media : [{ type: "image", title: "产品图", url: "📦" }], datasheets: datasheets, specs: specs, certifications: certifications, salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } }; db.products.push(newProduct); showToast("产品创建成功！"); }
-      state.editingProductMedia = []; state.editingProductDatasheets = []; state.editingProductCerts = [];
+      
+      var priceChangeReason = document.getElementById("priceChangeReason") ? document.getElementById("priceChangeReason").value : "";
+      var today = new Date().toISOString().split("T")[0];
+      
+      if (id) {
+        var product = getProductById(id);
+        if (product) {
+          var oldPrice = product.factoryPrice;
+          var priceHistory = product.priceHistory || [];
+          
+          if (factoryPrice !== oldPrice && oldPrice) {
+            if (!priceChangeReason) {
+              showToast("请填写出厂价变更原因！", "error");
+              return;
+            }
+            if (priceHistory.length > 0 && !priceHistory[0].expiredDate) {
+              priceHistory[0].expiredDate = today;
+            }
+            priceHistory.unshift({
+              price: factoryPrice,
+              effectiveDate: today,
+              operator: state.currentUser ? state.currentUser.realName : "admin",
+              reason: priceChangeReason,
+              attachments: state.editingPriceAttachments.slice()
+            });
+          }
+          
+          Object.assign(product, { name: name, sku: sku, brand: brand, categoryId: categoryId, vendorId: vendorId, status: status, factoryPrice: factoryPrice, marketGuidePrice: marketGuidePrice, moq: moq, benchmarkProduct: benchmarkProduct, benchmarkContext: benchmarkContext, tags: tags, specs: specs, media: media, datasheets: datasheets, certifications: certifications, priceHistory: priceHistory });
+          showToast("产品更新成功！");
+        }
+      } else {
+        var newPriceHistory = [];
+        if (factoryPrice) {
+          newPriceHistory.push({
+            price: factoryPrice,
+            effectiveDate: today,
+            operator: state.currentUser ? state.currentUser.realName : "admin",
+            reason: "新品初始定价",
+            attachments: []
+          });
+        }
+        var newProduct = { id: getNextId(db.products), name: name, sku: sku, brand: brand, categoryId: categoryId, vendorId: vendorId, status: status, factoryPrice: factoryPrice, marketGuidePrice: marketGuidePrice, moq: moq, benchmarkProduct: benchmarkProduct, benchmarkContext: benchmarkContext, tags: tags, media: media.length > 0 ? media : [{ type: "image", title: "产品图", url: "📦" }], datasheets: datasheets, specs: specs, certifications: certifications, priceHistory: newPriceHistory, salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } };
+        db.products.push(newProduct);
+        showToast("产品创建成功！");
+      }
+      state.editingProductMedia = []; state.editingProductDatasheets = []; state.editingProductCerts = []; state.editingPriceAttachments = [];
       navigate("#/products");
     }
 
