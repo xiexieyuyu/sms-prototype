@@ -5,1129 +5,190 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SMS - 外贸小家电供应商管理系统</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    html, body {
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 
-                   'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
-      color: #262626;
-      background-color: #F5F6FA;
-    }
-    
-    body {
-      overflow-x: hidden;
-    }
-    
-    a {
-      color: #1890FF;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    
-    a:hover {
-      color: #40a9ff;
-    }
-    
-    button {
-      font-family: inherit;
-      font-size: inherit;
-      cursor: pointer;
-      border: none;
-      outline: none;
-      background: none;
-    }
-    
-    input, select, textarea {
-      font-family: inherit;
-      font-size: inherit;
-      outline: none;
-    }
-    
-    #app {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-    
-    .topbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 64px;
-      background: #fff;
-      border-bottom: 1px solid #F0F0F0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      z-index: 1000;
-    }
-    
-    .topbar.client-mode-active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-bottom: none;
-    }
-    
-    .topbar.client-mode-active .topbar-logo,
-    .topbar.client-mode-active .topbar-username,
-    .topbar.client-mode-active .topbar-role {
-      color: #fff;
-    }
-    
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    
-    .topbar-logo {
-      font-size: 20px;
-      font-weight: bold;
-      color: #1890FF;
-      cursor: pointer;
-    }
-    
-    .topbar-menu-toggle {
-      display: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #595959;
-    }
-    
-    .topbar.client-mode-active .topbar-menu-toggle {
-      color: #fff;
-    }
-    
-    .topbar-client-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 16px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid #fff;
-      border-radius: 20px;
-      font-size: 14px;
-      color: #fff;
-      font-weight: bold;
-    }
-    
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    
-    .topbar-client-mode {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      background: #FAFAFA;
-      border: 1px solid #D9D9D9;
-      border-radius: 20px;
-      font-size: 13px;
-      color: #595959;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .topbar-client-mode:hover {
-      border-color: #1890FF;
-      color: #1890FF;
-    }
-    
-    .topbar-client-mode.active {
-      background: #fff;
-      border-color: #fff;
-      color: #667eea;
-    }
-    
-    .topbar-user {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .topbar-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: bold;
-      font-size: 14px;
-    }
-    
-    .topbar.client-mode-active .topbar-avatar {
-      border: 2px solid #fff;
-    }
-    
-    .topbar-username {
-      font-size: 14px;
-      color: #262626;
-    }
-    
-    .topbar-role {
-      font-size: 12px;
-      color: #8C8C8C;
-    }
-    
-    .topbar-logout {
-      padding: 6px 12px;
-      background: #fff;
-      border: 1px solid #D9D9D9;
-      border-radius: 6px;
-      color: #595959;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .topbar-logout:hover {
-      color: #FF4D4F;
-      border-color: #FF4D4F;
-    }
-    
-    .topbar.client-mode-active .topbar-logout {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: #fff;
-      color: #fff;
-    }
-    
-    .topbar.client-mode-active .topbar-logout:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-    
-    .sidebar {
-      position: fixed;
-      top: 64px;
-      left: 0;
-      bottom: 0;
-      width: 240px;
-      background: #fff;
-      border-right: 1px solid #F0F0F0;
-      overflow-y: auto;
-      z-index: 999;
-      transition: transform 0.3s;
-    }
-    
-    .sidebar.hidden {
-      transform: translateX(-100%);
-    }
-    
-    .sidebar-section {
-      padding: 16px 0;
-      border-bottom: 1px solid #F0F0F0;
-    }
-    
-    .sidebar-section:last-child {
-      border-bottom: none;
-    }
-    
-    .sidebar-section-title {
-      padding: 0 24px 8px;
-      font-size: 12px;
-      color: #8C8C8C;
-      text-transform: uppercase;
-    }
-    
-    .sidebar-menu-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      color: #595959;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-    
-    .sidebar-menu-item:hover {
-      background: #F5F6FA;
-      color: #1890FF;
-    }
-    
-    .sidebar-menu-item.active {
-      background: #E6F7FF;
-      color: #1890FF;
-    }
-    
-    .sidebar-menu-item.active::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: #1890FF;
-    }
-    
-    .main-content {
-      margin-top: 64px;
-      margin-left: 240px;
-      padding: 24px;
-      min-height: calc(100vh - 64px);
-      overflow-y: auto;
-      transition: margin-left 0.3s;
-    }
-    
-    .main-content.no-sidebar {
-      margin-left: 0;
-    }
-    
-    .main-content.full-width {
-      margin-left: 0;
-    }
-    
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
-    
-    .card-header {
-      padding: 24px;
-      border-bottom: 1px solid #F0F0F0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .card-title {
-      font-size: 20px;
-      font-weight: bold;
-      color: #262626;
-    }
-    
-    .card-subtitle {
-      margin-top: 4px;
-      font-size: 14px;
-      color: #8C8C8C;
-    }
-    
-    .card-body {
-      padding: 24px;
-    }
-    
-    .card-actions {
-      display: flex;
-      gap: 12px;
-    }
-    
-    .btn {
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      border: none;
-    }
-    
-    .btn-primary {
-      background: #1890FF;
-      color: #fff;
-    }
-    
-    .btn-primary:hover {
-      background: #40a9ff;
-    }
-    
-    .btn-primary:disabled {
-      background: #D9D9D9;
-      cursor: not-allowed;
-    }
-    
-    .btn-default {
-      background: #fff;
-      color: #595959;
-      border: 1px solid #D9D9D9;
-    }
-    
-    .btn-default:hover {
-      color: #1890FF;
-      border-color: #1890FF;
-    }
-    
-    .btn-danger {
-      background: #FF4D4F;
-      color: #fff;
-    }
-    
-    .btn-danger:hover {
-      background: #ff7875;
-    }
-    
-    .btn-lg {
-      padding: 12px 24px;
-      font-size: 16px;
-    }
-    
-    .btn-sm {
-      padding: 4px 8px;
-      font-size: 12px;
-    }
-    
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-    
-    .tag-orange {
-      background: #FFF7E6;
-      color: #FA8C16;
-    }
-    
-    .tag-green {
-      background: #F6FFED;
-      color: #52C41A;
-    }
-    
-    .tag-blue {
-      background: #E6F7FF;
-      color: #1890FF;
-    }
-    
-    .tag-red {
-      background: #FFF1F0;
-      color: #FF4D4F;
-    }
-    
-    .tag-purple {
-      background: #F9F0FF;
-      color: #722ED1;
-    }
-    
-    .tag-cyan {
-      background: #E6FFFB;
-      color: #13C2C2;
-    }
-    
-    .tag-gold {
-      background: #FFFBE6;
-      color: #FAAD14;
-    }
-    
-    .tag-gray {
-      background: #FAFAFA;
-      color: #8C8C8C;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .form-label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: #262626;
-    }
-    
-    .form-label-required::after {
-      content: ' *';
-      color: #FF4D4F;
-    }
-    
-    .form-input, .form-select, .form-textarea {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #D9D9D9;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-    
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: #1890FF;
-      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
-    }
-    
-    .form-textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    
-    .form-error {
-      color: #FF4D4F;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-    
-    .form-hint {
-      color: #8C8C8C;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-    
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-    
-    .form-row-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    
-    .checkbox-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .checkbox-item input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-    
-    .tag-input-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 8px;
-      border: 1px solid #D9D9D9;
-      border-radius: 6px;
-      min-height: 40px;
-    }
-    
-    .tag-input-container:focus-within {
-      border-color: #1890FF;
-      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
-    }
-    
-    .tag-input-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
-      background: #E6F7FF;
-      color: #1890FF;
-      border-radius: 4px;
-      font-size: 13px;
-    }
-    
-    .tag-input-item-remove {
-      cursor: pointer;
-      font-weight: bold;
-    }
-    
-    .tag-input-field {
-      flex: 1;
-      min-width: 100px;
-      border: none;
-      outline: none;
-      padding: 4px;
-    }
-    
-    .list-item {
-      padding: 16px;
-      border: 1px solid #F0F0F0;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fff;
-    }
-    
-    .list-item-content {
-      flex: 1;
-    }
-    
-    .list-item-actions {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .list-item-indent {
-      margin-left: 32px;
-    }
-    
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.45);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .modal-overlay.active {
-      display: flex;
-    }
-    
-    .modal {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-      max-width: 600px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    
-    .modal-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid #F0F0F0;
-    }
-    
-    .modal-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #262626;
-    }
-    
-    .modal-body {
-      padding: 24px;
-    }
-    
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid #F0F0F0;
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-    
-    .filter-bar {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      margin-bottom: 16px;
-    }
-    
-    .filter-row {
-      display: flex;
-      gap: 16px;
-      align-items: flex-end;
-      flex-wrap: wrap;
-    }
-    
-    .filter-item {
-      flex: 0 0 auto;
-      min-width: 200px;
-    }
-    
-    .filter-item.flex-1 {
-      flex: 1;
-      min-width: 200px;
-    }
-    
-    .grid {
-      display: grid;
-      gap: 24px;
-    }
-    
-    .grid-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .grid-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .grid-4 {
-      grid-template-columns: repeat(4, 1fr);
-    }
-    
-    .product-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-    
-    .product-card:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-      transform: translateY(-2px);
-    }
-    
-    .product-card-checkbox {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      width: 20px;
-      height: 20px;
-      z-index: 10;
-    }
-    
-    .product-card-image {
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 80px;
-      background: #F5F6FA;
-    }
-    
-    .product-card-body {
-      padding: 16px;
-    }
-    
-    .product-card-name {
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 4px;
-      color: #262626;
-    }
-    
-    .product-card-sku {
-      font-size: 13px;
-      color: #8C8C8C;
-      margin-bottom: 12px;
-    }
-    
-    .product-card-tags {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    
-    .product-card-price {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 12px;
-      border-top: 1px solid #F0F0F0;
-    }
-    
-    .product-card-price-label {
-      font-size: 12px;
-      color: #8C8C8C;
-    }
-    
-    .product-card-price-value {
-      font-size: 18px;
-      font-weight: bold;
-      color: #1890FF;
-    }
-    
-    .table-wrapper {
-      overflow-x: auto;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
-    
-    thead {
-      background: #FAFAFA;
-    }
-    
-    th {
-      padding: 16px;
-      text-align: left;
-      font-weight: 600;
-      color: #262626;
-      border-bottom: 1px solid #F0F0F0;
-      white-space: nowrap;
-    }
-    
-    td {
-      padding: 16px;
-      border-bottom: 1px solid #F0F0F0;
-    }
-    
-    tbody tr {
-      transition: background 0.2s;
-    }
-    
-    tbody tr:hover {
-      background: #F0F7FF;
-    }
-    
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .info-item {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    
-    .info-label {
-      font-size: 13px;
-      color: #8C8C8C;
-    }
-    
-    .info-value {
-      font-size: 14px;
-      color: #262626;
-      font-weight: 500;
-    }
-    
-    .section {
-      margin-bottom: 32px;
-    }
-    
-    .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 16px;
-      color: #262626;
-    }
-    
-    .section-divider {
-      height: 1px;
-      background: #F0F0F0;
-      margin: 24px 0;
-    }
-    
-    .alert {
-      padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      display: flex;
-      gap: 12px;
-    }
-    
-    .alert-info {
-      background: #E6F7FF;
-      border-left: 4px solid #1890FF;
-    }
-    
-    .alert-warning {
-      background: #FFF7E6;
-      border-left: 4px solid #FA8C16;
-    }
-    
-    .alert-success {
-      background: #F6FFED;
-      border-left: 4px solid #52C41A;
-    }
-    
-    .alert-error {
-      background: #FFF1F0;
-      border-left: 4px solid #FF4D4F;
-    }
-    
-    .compare-container {
-      overflow-x: auto;
-      position: relative;
-    }
-    
-    .compare-table {
-      min-width: 800px;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-    
-    .compare-table thead th {
-      position: sticky;
-      top: 0;
-      background: #FAFAFA;
-      z-index: 20;
-    }
-    
-    .compare-table th:first-child,
-    .compare-table td:first-child {
-      position: sticky;
-      left: 0;
-      background: #FAFAFA;
-      z-index: 10;
-    }
-    
-    .compare-table thead th:first-child {
-      z-index: 30;
-    }
-    
-    .compare-product-header {
-      text-align: center;
-      padding: 16px;
-    }
-    
-    .compare-product-icon {
-      font-size: 48px;
-      margin-bottom: 8px;
-    }
-    
-    .compare-product-name {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-    
-    .compare-product-sku {
-      font-size: 12px;
-      color: #8C8C8C;
-      margin-bottom: 8px;
-    }
-    
-    .compare-remove {
-      color: #FF4D4F;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    
-    .media-gallery {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    
-    .media-main {
-      flex: 1;
-      height: 400px;
-      background: #F5F6FA;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 120px;
-    }
-    
-    .media-thumbs {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .media-thumb {
-      width: 60px;
-      height: 60px;
-      background: #F5F6FA;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: all 0.2s;
-    }
-    
-    .media-thumb:hover,
-    .media-thumb.active {
-      border-color: #1890FF;
-    }
-    
-    .login-container {
-      display: flex;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    .login-brand {
-      flex: 0 0 40%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      padding: 48px;
-    }
-    
-    .login-brand-logo {
-      font-size: 64px;
-      font-weight: bold;
-      margin-bottom: 24px;
-    }
-    
-    .login-brand-title {
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-    
-    .login-brand-subtitle {
-      font-size: 16px;
-      opacity: 0.9;
-    }
-    
-    .login-form-section {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #fff;
-      padding: 48px;
-    }
-    
-    .login-form-wrapper {
-      width: 100%;
-      max-width: 400px;
-    }
-    
-    .login-form-title {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 32px;
-      text-align: center;
-    }
-    
-    .login-test-accounts {
-      margin-top: 24px;
-      padding: 16px;
-      background: #E6F7FF;
-      border-left: 4px solid #1890FF;
-      border-radius: 6px;
-    }
-    
-    .login-test-accounts-title {
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: #0050B3;
-    }
-    
-    .login-test-account {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      color: #096DD9;
-      font-size: 13px;
-    }
-    
-    .placeholder-page {
-      text-align: center;
-      padding: 60px 24px;
-    }
-    
-    .placeholder-icon {
-      font-size: 80px;
-      margin-bottom: 24px;
-    }
-    
-    .placeholder-title {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 12px;
-      color: #262626;
-    }
-    
-    .placeholder-desc {
-      font-size: 16px;
-      color: #8C8C8C;
-      margin-bottom: 32px;
-    }
-    
-    .placeholder-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    
-    @media (max-width: 1024px) {
-      .topbar-menu-toggle {
-        display: block;
-      }
-      
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      
-      .sidebar.active {
-        transform: translateX(0);
-      }
-      
-      .main-content {
-        margin-left: 0;
-      }
-      
-      .login-brand {
-        display: none;
-      }
-      
-      .grid-3, .grid-4 {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .info-grid, .form-row, .form-row-3 {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .topbar {
-        padding: 0 16px;
-      }
-      
-      .topbar-username,
-      .topbar-role {
-        display: none;
-      }
-      
-      .main-content {
-        padding: 16px;
-      }
-      
-      .card-body {
-        padding: 16px;
-      }
-      
-      .grid-2, .grid-3, .grid-4 {
-        grid-template-columns: 1fr;
-      }
-      
-      .filter-row {
-        flex-direction: column;
-      }
-      
-      .filter-item {
-        width: 100%;
-      }
-      
-      .media-gallery {
-        flex-direction: column;
-      }
-      
-      .media-thumbs {
-        flex-direction: row;
-      }
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 14px; line-height: 1.5; color: #262626; background: #F5F6FA; }
+    a { color: #1890FF; text-decoration: none; cursor: pointer; }
+    a:hover { color: #40a9ff; }
+    button { font-family: inherit; font-size: inherit; cursor: pointer; border: none; outline: none; background: none; }
+    input, select, textarea { font-family: inherit; font-size: inherit; outline: none; }
+    #app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { position: fixed; top: 0; left: 0; right: 0; height: 64px; background: #fff; border-bottom: 1px solid #F0F0F0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 1000; }
+    .topbar.client-mode-active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-bottom: none; }
+    .topbar.client-mode-active .topbar-logo, .topbar.client-mode-active .topbar-username, .topbar.client-mode-active .topbar-role { color: #fff; }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .topbar-logo { font-size: 20px; font-weight: bold; color: #1890FF; cursor: pointer; }
+    .topbar-menu-toggle { display: none; font-size: 24px; cursor: pointer; color: #595959; }
+    .topbar.client-mode-active .topbar-menu-toggle { color: #fff; }
+    .topbar-client-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; background: rgba(255,255,255,0.2); border: 2px solid #fff; border-radius: 20px; font-size: 14px; color: #fff; font-weight: bold; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-client-mode { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #FAFAFA; border: 1px solid #D9D9D9; border-radius: 20px; font-size: 13px; color: #595959; cursor: pointer; transition: all 0.2s; }
+    .topbar-client-mode:hover { border-color: #1890FF; color: #1890FF; }
+    .topbar-client-mode.active { background: #fff; border-color: #fff; color: #667eea; }
+    .topbar-user { display: flex; align-items: center; gap: 8px; }
+    .topbar-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px; }
+    .topbar.client-mode-active .topbar-avatar { border: 2px solid #fff; }
+    .topbar-username { font-size: 14px; color: #262626; }
+    .topbar-role { font-size: 12px; color: #8C8C8C; }
+    .topbar-logout { padding: 6px 12px; background: #fff; border: 1px solid #D9D9D9; border-radius: 6px; color: #595959; cursor: pointer; transition: all 0.2s; }
+    .topbar-logout:hover { color: #FF4D4F; border-color: #FF4D4F; }
+    .topbar.client-mode-active .topbar-logout { background: rgba(255,255,255,0.2); border-color: #fff; color: #fff; }
+    .sidebar { position: fixed; top: 64px; left: 0; bottom: 0; width: 240px; background: #fff; border-right: 1px solid #F0F0F0; overflow-y: auto; z-index: 999; transition: transform 0.3s; }
+    .sidebar.hidden { transform: translateX(-100%); }
+    .sidebar-section { padding: 16px 0; border-bottom: 1px solid #F0F0F0; }
+    .sidebar-section:last-child { border-bottom: none; }
+    .sidebar-section-title { padding: 0 24px 8px; font-size: 12px; color: #8C8C8C; text-transform: uppercase; }
+    .sidebar-menu-item { display: flex; align-items: center; gap: 8px; padding: 12px 24px; color: #595959; cursor: pointer; transition: all 0.2s; position: relative; }
+    .sidebar-menu-item:hover { background: #F5F6FA; color: #1890FF; }
+    .sidebar-menu-item.active { background: #E6F7FF; color: #1890FF; }
+    .sidebar-menu-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #1890FF; }
+    .main-content { margin-top: 64px; margin-left: 240px; padding: 24px; min-height: calc(100vh - 64px); overflow-y: auto; transition: margin-left 0.3s; }
+    .main-content.no-sidebar { margin-left: 0; }
+    .main-content.full-width { margin-left: 0; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; }
+    .card-header { padding: 24px; border-bottom: 1px solid #F0F0F0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .card-title { font-size: 20px; font-weight: bold; color: #262626; }
+    .card-subtitle { margin-top: 4px; font-size: 14px; color: #8C8C8C; }
+    .card-body { padding: 24px; }
+    .card-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn { padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: none; }
+    .btn-primary { background: #1890FF; color: #fff; }
+    .btn-primary:hover { background: #40a9ff; }
+    .btn-primary:disabled { background: #D9D9D9; cursor: not-allowed; }
+    .btn-default { background: #fff; color: #595959; border: 1px solid #D9D9D9; }
+    .btn-default:hover { color: #1890FF; border-color: #1890FF; }
+    .btn-danger { background: #FF4D4F; color: #fff; }
+    .btn-danger:hover { background: #ff7875; }
+    .btn-lg { padding: 12px 24px; font-size: 16px; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; }
+    .tag { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 13px; white-space: nowrap; }
+    .tag-blue { background: #E6F7FF; color: #1890FF; }
+    .tag-green { background: #F6FFED; color: #52C41A; }
+    .tag-orange { background: #FFF7E6; color: #FA8C16; }
+    .tag-red { background: #FFF1F0; color: #FF4D4F; }
+    .tag-purple { background: #F9F0FF; color: #722ED1; }
+    .tag-cyan { background: #E6FFFB; color: #13C2C2; }
+    .tag-gray { background: #FAFAFA; color: #8C8C8C; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; margin-bottom: 8px; font-weight: 500; color: #262626; }
+    .form-label-required::after { content: ' *'; color: #FF4D4F; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; transition: all 0.2s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #1890FF; box-shadow: 0 0 0 2px rgba(24,144,255,0.1); }
+    .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .checkbox-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+    .list-item { padding: 16px; border: 1px solid #F0F0F0; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; background: #fff; transition: all 0.2s; }
+    .list-item:hover { border-color: #1890FF; box-shadow: 0 2px 8px rgba(24,144,255,0.1); }
+    .list-item-content { flex: 1; }
+    .list-item-actions { display: flex; gap: 8px; }
+    .list-item-indent { margin-left: 32px; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); z-index: 2000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; }
+    .modal-lg { max-width: 900px; }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid #F0F0F0; display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-size: 18px; font-weight: bold; color: #262626; }
+    .modal-close { font-size: 20px; cursor: pointer; color: #8C8C8C; }
+    .modal-close:hover { color: #262626; }
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid #F0F0F0; display: flex; justify-content: flex-end; gap: 12px; }
+    .filter-bar { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; }
+    .filter-row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
+    .filter-item { flex: 0 0 auto; min-width: 200px; }
+    .filter-item.flex-1 { flex: 1; min-width: 200px; }
+    .grid { display: grid; gap: 24px; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .product-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+    .product-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-2px); }
+    .product-card-checkbox { position: absolute; top: 12px; left: 12px; width: 20px; height: 20px; z-index: 10; }
+    .product-card-selected { border: 2px solid #1890FF; box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.2); }
+    .product-card-image { height: 200px; display: flex; align-items: center; justify-content: center; font-size: 80px; background: #F5F6FA; }
+    .product-card-body { padding: 16px; }
+    .product-card-name { font-size: 16px; font-weight: bold; margin-bottom: 4px; color: #262626; }
+    .product-card-sku { font-size: 13px; color: #8C8C8C; margin-bottom: 12px; }
+    .product-card-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .product-card-price { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #F0F0F0; }
+    .product-card-price-label { font-size: 12px; color: #8C8C8C; }
+    .product-card-price-value { font-size: 18px; font-weight: bold; color: #1890FF; }
+    .vendor-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; cursor: pointer; transition: all 0.2s; }
+    .vendor-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-2px); }
+    .vendor-card-header { padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; text-align: center; }
+    .vendor-card-icon { font-size: 48px; margin-bottom: 8px; }
+    .vendor-card-name { font-size: 16px; font-weight: bold; }
+    .vendor-card-body { padding: 16px; }
+    .vendor-card-info { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #595959; }
+    .vendor-card-info-item { display: flex; align-items: center; gap: 8px; }
+    .vendor-card-rating { color: #FAAD14; }
+    .vendor-card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    thead { background: #FAFAFA; }
+    th { padding: 16px; text-align: left; font-weight: 600; color: #262626; border-bottom: 1px solid #F0F0F0; white-space: nowrap; }
+    td { padding: 16px; border-bottom: 1px solid #F0F0F0; }
+    tbody tr { transition: background 0.2s; }
+    tbody tr:hover { background: #F0F7FF; }
+    .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+    .info-item { display: flex; flex-direction: column; gap: 4px; }
+    .info-label { font-size: 13px; color: #8C8C8C; }
+    .info-value { font-size: 14px; color: #262626; font-weight: 500; }
+    .section { margin-bottom: 32px; }
+    .section-title { font-size: 18px; font-weight: bold; margin-bottom: 16px; color: #262626; }
+    .alert { padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+    .alert-info { background: #E6F7FF; border-left: 4px solid #1890FF; }
+    .alert-warning { background: #FFF7E6; border-left: 4px solid #FA8C16; }
+    .alert-success { background: #F6FFED; border-left: 4px solid #52C41A; }
+    .alert-error { background: #FFF1F0; border-left: 4px solid #FF4D4F; }
+    .compare-container { overflow-x: auto; }
+    .compare-table { min-width: 800px; border-collapse: separate; border-spacing: 0; width: 100%; }
+    .compare-table thead th { position: sticky; top: 0; background: #FAFAFA; z-index: 20; }
+    .compare-table th:first-child, .compare-table td:first-child { position: sticky; left: 0; background: #FAFAFA; z-index: 10; }
+    .compare-product-header { text-align: center; padding: 16px; }
+    .compare-product-icon { font-size: 48px; margin-bottom: 8px; }
+    .compare-product-name { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+    .compare-product-sku { font-size: 12px; color: #8C8C8C; margin-bottom: 8px; }
+    .compare-remove { color: #FF4D4F; font-size: 12px; cursor: pointer; }
+    .media-main { height: 400px; background: #F5F6FA; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 120px; margin-bottom: 24px; }
+    .login-container { display: flex; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .login-brand { flex: 0 0 40%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; padding: 48px; }
+    .login-brand-logo { font-size: 64px; font-weight: bold; margin-bottom: 24px; }
+    .login-brand-title { font-size: 28px; font-weight: bold; margin-bottom: 12px; }
+    .login-brand-subtitle { font-size: 16px; opacity: 0.9; }
+    .login-form-section { flex: 1; display: flex; justify-content: center; align-items: center; background: #fff; padding: 48px; }
+    .login-form-wrapper { width: 100%; max-width: 400px; }
+    .login-form-title { font-size: 24px; font-weight: bold; margin-bottom: 32px; text-align: center; }
+    .login-test-accounts { margin-top: 24px; padding: 16px; background: #E6F7FF; border-left: 4px solid #1890FF; border-radius: 6px; }
+    .login-test-accounts-title { font-weight: bold; margin-bottom: 8px; color: #0050B3; }
+    .login-test-account { display: flex; justify-content: space-between; padding: 4px 0; color: #096DD9; font-size: 13px; }
+    .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px; }
+    .stat-card { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .stat-card-icon { font-size: 32px; margin-bottom: 12px; }
+    .stat-card-value { font-size: 28px; font-weight: bold; color: #262626; margin-bottom: 4px; }
+    .stat-card-label { font-size: 14px; color: #8C8C8C; }
+    .tabs { display: flex; border-bottom: 1px solid #F0F0F0; margin-bottom: 24px; }
+    .tab { padding: 12px 24px; cursor: pointer; color: #595959; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab:hover { color: #1890FF; }
+    .tab.active { color: #1890FF; border-bottom-color: #1890FF; }
+    .placeholder-page { text-align: center; padding: 60px 24px; }
+    .placeholder-icon { font-size: 80px; margin-bottom: 24px; }
+    .placeholder-title { font-size: 24px; font-weight: bold; margin-bottom: 12px; color: #262626; }
+    .placeholder-desc { font-size: 16px; color: #8C8C8C; margin-bottom: 32px; }
+    .toast { position: fixed; top: 80px; right: 24px; padding: 12px 24px; background: #fff; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 3000; display: none; }
+    .toast.show { display: block; }
+    .toast-success { border-left: 4px solid #52C41A; }
+    .toast-error { border-left: 4px solid #FF4D4F; }
+    @media (max-width: 1200px) { .stat-cards { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 1024px) { .topbar-menu-toggle { display: block; } .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } .main-content { margin-left: 0; } .login-brand { display: none; } .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } .info-grid, .form-row, .form-row-3 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .topbar { padding: 0 16px; } .topbar-username, .topbar-role { display: none; } .main-content { padding: 16px; } .card-body { padding: 16px; } .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .filter-row { flex-direction: column; } .filter-item { width: 100%; } .stat-cards { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <div id="app"></div>
-  
+  <div id="toast" class="toast"></div>
   <div id="clientModeModal" class="modal-overlay">
     <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">🔒 关闭客户演示模式</div>
-      </div>
+      <div class="modal-header"><div class="modal-title">🔒 关闭客户演示模式</div></div>
       <div class="modal-body">
         <div class="form-group">
           <label class="form-label">请输入当前账号密码以关闭演示模式</label>
@@ -1141,9 +202,870 @@
       </div>
     </div>
   </div>
-
+  <div id="editModal" class="modal-overlay">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="editModalTitle">编辑</div>
+        <span class="modal-close" onclick="closeEditModal()">×</span>
+      </div>
+      <div class="modal-body" id="editModalBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-default" onclick="closeEditModal()">取消</button>
+        <button class="btn btn-primary" onclick="saveEdit()">保存</button>
+      </div>
+    </div>
+  </div>
   <script>
-    const db={users:[{id:1,username:"admin",demoPassword:"123456",realName:"管理员",role:"admin",avatar:"A",avatarBg:"#1890FF",status:"active"},{id:2,username:"sales",demoPassword:"123456",realName:"业务员",role:"sales",avatar:"S",avatarBg:"#52C41A",status:"active"}],categories:[{id:1,name:"厨房电器",parentId:null,sortOrder:1,enabled:!0,templateKey:null},{id:2,name:"榨汁机",parentId:1,templateKey:"juicer",sortOrder:11,enabled:!0},{id:5,name:"咖啡机",parentId:1,templateKey:"coffee",sortOrder:14,enabled:!0},{id:6,name:"空气炸锅",parentId:1,templateKey:"airfryer",sortOrder:15,enabled:!0},{id:10,name:"清洁电器",parentId:null,sortOrder:2,enabled:!0,templateKey:null},{id:11,name:"吸尘器",parentId:10,templateKey:"vacuum",sortOrder:21,enabled:!0},{id:12,name:"扫地机器人",parentId:10,templateKey:"robot",sortOrder:22,enabled:!0},{id:13,name:"蒸汽拖把",parentId:10,templateKey:"steammop",sortOrder:23,enabled:!0},{id:14,name:"布艺清洗机",parentId:10,templateKey:"fabriccleaner",sortOrder:24,enabled:!0}],tags:[{id:1,name:"热销",group:"feature",color:"#FA8C16",bgColor:"#FFF7E6",visibleTo:["admin","sales","client"],applicableTo:["product"],enabled:!0,sortOrder:1},{id:2,name:"OEM可定制",group:"strategy",color:"#52C41A",bgColor:"#F6FFED",visibleTo:["admin","sales"],applicableTo:["product"],enabled:!0,sortOrder:2},{id:3,name:"新品",group:"feature",color:"#1890FF",bgColor:"#E6F7FF",visibleTo:["admin","sales","client"],applicableTo:["product"],enabled:!0,sortOrder:3},{id:4,name:"独家",group:"status",color:"#722ED1",bgColor:"#F9F0FF",visibleTo:["admin"],applicableTo:["product"],enabled:!0,sortOrder:4},{id:5,name:"环保",group:"feature",color:"#13C2C2",bgColor:"#E6FFFB",visibleTo:["admin","sales","client"],applicableTo:["product"],enabled:!0,sortOrder:5},{id:11,name:"静音",group:"feature",color:"#52C41A",bgColor:"#F6FFED",visibleTo:["admin","sales","client"],applicableTo:["product"],enabled:!0,sortOrder:6},{id:9,name:"CE认证",group:"certification",color:"#1890FF",bgColor:"#E6F7FF",visibleTo:["admin","sales","client"],applicableTo:["product"],enabled:!0,sortOrder:7},{id:14,name:"RoHS认证",group:"certification",color:"#1890FF",bgColor:"#E6F7FF",visibleTo:["admin","sales","client"],applicableTo:["product"],enabled:!0,sortOrder:8}],templates:[{id:1,templateKey:"vacuum",name:"吸尘器参数模板",enabled:!0,parameters:[{fieldKey:"power",label:"功率",type:"number",unit:"W",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"battery_capacity",label:"电池容量",type:"number",unit:"mAh",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"voltage",label:"电压",type:"number",unit:"V",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"runtime",label:"续航时间",type:"number",unit:"min",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"dust_capacity",label:"尘杯容量",type:"number",unit:"ml",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"weight",label:"净重",type:"number",unit:"kg",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"noise_level",label:"噪音等级",type:"number",unit:"dB",required:!1,visibleTo:["admin","sales","client"]}]},{id:2,templateKey:"juicer",name:"榨汁机参数模板",enabled:!0,parameters:[{fieldKey:"power",label:"功率",type:"number",unit:"W",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"capacity",label:"容量",type:"number",unit:"ml",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"voltage",label:"电压",type:"number",unit:"V",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"speed",label:"转速",type:"number",unit:"RPM",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"weight",label:"净重",type:"number",unit:"kg",required:!0,visibleTo:["admin","sales","client"]}]},{id:3,templateKey:"airfryer",name:"空气炸锅参数模板",enabled:!0,parameters:[{fieldKey:"power",label:"功率",type:"number",unit:"W",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"capacity",label:"容量",type:"number",unit:"ml",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"voltage",label:"电压",type:"number",unit:"V",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"temp_range",label:"温度范围",type:"text",unit:"",required:!0,visibleTo:["admin","sales","client"]},{fieldKey:"weight",label:"净重",type:"number",unit:"kg",required:!0,visibleTo:["admin","sales","client"]}]}],vendors:[{id:1,name:"深圳清洁设备科技有限公司",icon:"🏭",rating:4,established:2015,location:{province:"广东省",city:"深圳市",district:"宝安区"},address:"广东省深圳市宝安区西乡街道固戍社区宝源路1号F栋",mainCategories:["吸尘器","扫地机器人","蒸汽拖把"],cooperatedBrands:["Philips","Midea","Bear"],factoryCerts:["ISO 9001","BSCI"],productComplianceExperience:["CE","RoHS","FCC","UL"],products:[1,5,6],productCount:3,cooperationYears:3,avgLeadTime:30,adminOnly:{legalPerson:"王建国",capitalCNY:5e6,employeesRange:{min:50,max:100},contact:{person:"王总",position:"总经理",phone:"0755-8888-6666",mobile:"138-0000-8888",email:"wang@szcleaner.com"}},assets:[{type:"pdf",title:"营业执照",src:"(mock)",clientVisible:!1},{type:"pdf",title:"ISO 9001证书",src:"(mock)",clientVisible:!1}]},{id:2,name:"浙江厨电智造有限公司",icon:"🏭",rating:5,established:2012,location:{province:"浙江省",city:"宁波市",district:"慈溪市"},address:"浙江省宁波市慈溪市观海卫镇工业园区创新路88号",mainCategories:["榨汁机","破壁机","搅拌机"],cooperatedBrands:["Midea","Joyoung","Bear"],factoryCerts:["ISO 9001","ISO 14001"],productComplianceExperience:["CE","RoHS","FDA"],products:[2,7],productCount:2,cooperationYears:5,avgLeadTime:25,adminOnly:{legalPerson:"李明华",capitalCNY:8e6,employeesRange:{min:100,max:200},contact:{person:"李总",position:"董事长",phone:"0574-6688-9999",mobile:"139-0000-6666",email:"li@zjkitchen.com"}},assets:[{type:"pdf",title:"营业执照",src:"(mock)",clientVisible:!1},{type:"pdf",title:"ISO证书",src:"(mock)",clientVisible:!1}]},{id:3,name:"广东小家电制造股份有限公司",icon:"🏭",rating:4,established:2010,location:{province:"广东省",city:"佛山市",district:"顺德区"},address:"广东省佛山市顺德区容桂街道华口工业区振华路28号",mainCategories:["空气炸锅","电烤箱"],cooperatedBrands:["Midea","Galanz"],factoryCerts:["ISO 9001","BSCI"],productComplianceExperience:["CE","RoHS","CB"],products:[3],productCount:1,cooperationYears:4,avgLeadTime:35,adminOnly:{legalPerson:"张伟强",capitalCNY:12e6,employeesRange:{min:200,max:500},contact:{person:"张总",position:"总经理",phone:"0757-2888-6666",mobile:"136-0000-9999",email:"zhang@gdappliance.com"}},assets:[{type:"pdf",title:"营业执照",src:"(mock)",clientVisible:!1}]}],products:[{id:1,sku:"VC-5000",name:"无线手持吸尘器 Pro",categoryId:11,brand:"CleanPro",tags:["热销","OEM可定制","CE认证"],status:"在售",vendorId:1,moq:500,factoryPrice:22,marketGuidePrice:25.3,benchmarkProduct:"Shark Navigator NV360",benchmarkContext:"Navigator Lift-Away Deluxe 是美国市场最受欢迎的立式吸尘器之一，售价约$199。我们的产品在功能上对标该款式。",media:[{type:"image",url:"🌪️",isClientVisible:!0},{type:"image",url:"📷",isClientVisible:!0}],specs:{power:{value:120,unit:"W"},battery_capacity:{value:2500,unit:"mAh"},voltage:{value:22,unit:"V"},runtime:{value:45,unit:"min"},dust_capacity:{value:500,unit:"ml"},weight:{value:1.5,unit:"kg"},noise_level:{value:68,unit:"dB"}},certifications:[{name:"CE",code:"CE-2024-001",public:!0},{name:"RoHS",code:"RoHS-2024-002",public:!0},{name:"UL",code:"UL-2024-004",public:!1}],salesRestrictions:[{country:"US",client:"Home Depot"},{country:"EU",client:"MediaMarkt"}],internalNotes:{collaboration:[{type:"info",icon:"💡",title:"市场反馈",content:"客户反馈电池续航表现优异",visibleTo:["admin","sales"]}],sensitive:[{type:"warning",icon:"🔒",title:"成本机密",content:"出厂价$22.00为机密信息",visibleTo:["admin"]}]}},{id:2,sku:"JM-2000",name:"多功能破壁料理机",categoryId:2,brand:"JoyMix",tags:["热销","CE认证"],status:"在售",vendorId:2,moq:300,factoryPrice:45,marketGuidePrice:51.75,benchmarkProduct:"Vitamix E310",benchmarkContext:"E310是Vitamix入门级破壁机，售价约$349。",media:[{type:"image",url:"🥤",isClientVisible:!0}],specs:{power:{value:1500,unit:"W"},capacity:{value:2e3,unit:"ml"},voltage:{value:220,unit:"V"},speed:{value:3e4,unit:"RPM"},weight:{value:3.5,unit:"kg"}},certifications:[{name:"CE",code:"CE-2024-011",public:!0}],salesRestrictions:[],internalNotes:{collaboration:[],sensitive:[]}},{id:3,sku:"AF-3500",name:"智能空气炸锅 3.5L",categoryId:6,brand:"AirFry Pro",tags:["新品","独家","CE认证"],status:"在售",vendorId:3,moq:500,factoryPrice:38,marketGuidePrice:43.7,benchmarkProduct:"Philips HD9252",benchmarkContext:"HD9252是飞利浦经典款空气炸锅，售价约$129。",media:[{type:"image",url:"🌪️",isClientVisible:!0}],specs:{power:{value:1800,unit:"W"},capacity:{value:3500,unit:"ml"},voltage:{value:220,unit:"V"},temp_range:"80-200°C",weight:{value:4.2,unit:"kg"}},certifications:[{name:"CE",code:"CE-2024-021",public:!0}],salesRestrictions:[{country:"EU",client:"MediaMarkt"}],internalNotes:{collaboration:[],sensitive:[{type:"warning",icon:"🔒",title:"独家协议",content:"MediaMarkt有欧盟市场独家销售权",visibleTo:["admin"]}]}},{id:4,sku:"CM-800",name:"全自动意式咖啡机",categoryId:5,brand:"BrewMaster",tags:["热销","CE认证"],status:"在售",vendorId:1,moq:200,factoryPrice:85,marketGuidePrice:97.75,benchmarkProduct:"DeLonghi Magnifica",benchmarkContext:"Magnifica是德龙入门级全自动咖啡机，售价约$599。",media:[{type:"image",url:"☕",isClientVisible:!0}],specs:{power:{value:1200,unit:"W"},capacity:{value:800,unit:"ml"},voltage:{value:220,unit:"V"},weight:{value:2.8,unit:"kg"}},certifications:[{name:"CE",code:"CE-2024-031",public:!0}],salesRestrictions:[],internalNotes:{collaboration:[],sensitive:[]}},{id:5,sku:"SM-1200",name:"智能蒸汽拖把",categoryId:13,brand:"SteamClean",tags:["新品","环保","CE认证"],status:"在售",vendorId:1,moq:400,factoryPrice:32,marketGuidePrice:36.8,benchmarkProduct:"Shark Steam Mop",benchmarkContext:"Shark Steam Mop是美国市场热销的蒸汽拖把。",media:[{type:"image",url:"🧹",isClientVisible:!0}],specs:{power:{value:1500,unit:"W"},weight:{value:2.5,unit:"kg"}},certifications:[{name:"CE",code:"CE-2024-041",public:!0}],salesRestrictions:[],internalNotes:{collaboration:[],sensitive:[]}},{id:6,sku:"RV-2000",name:"智能扫地机器人",categoryId:12,brand:"RoboVac",tags:["热销","静音","CE认证"],status:"在售",vendorId:1,moq:300,factoryPrice:120,marketGuidePrice:138,benchmarkProduct:"iRobot Roomba 694",benchmarkContext:"Roomba 694是iRobot入门级扫地机器人。",media:[{type:"image",url:"🤖",isClientVisible:!0}],specs:{power:{value:25,unit:"W"},battery_capacity:{value:2600,unit:"mAh"},voltage:{value:14.4,unit:"V"},runtime:{value:90,unit:"min"},dust_capacity:{value:600,unit:"ml"},weight:{value:2.8,unit:"kg"},noise_level:{value:55,unit:"dB"}},certifications:[{name:"CE",code:"CE-2024-051",public:!0}],salesRestrictions:[],internalNotes:{collaboration:[],sensitive:[]}},{id:7,sku:"BM-500",name:"便携式榨汁杯",categoryId:2,brand:"BlendMini",tags:["新品","CE认证"],status:"在售",vendorId:2,moq:500,factoryPrice:12,marketGuidePrice:13.8,benchmarkProduct:"BlendJet 2",benchmarkContext:"BlendJet 2是美国热销的便携式榨汁杯。",media:[{type:"image",url:"🥤",isClientVisible:!0}],specs:{power:{value:60,unit:"W"},capacity:{value:500,unit:"ml"},voltage:{value:7.4,unit:"V"},speed:{value:2e4,unit:"RPM"},weight:{value:.5,unit:"kg"}},certifications:[{name:"CE",code:"CE-2024-061",public:!0}],salesRestrictions:[],internalNotes:{collaboration:[],sensitive:[]}},{id:8,sku:"FC-800",name:"布艺清洗机",categoryId:14,brand:"FabricCare",tags:["新品","CE认证"],status:"在售",vendorId:1,moq:300,factoryPrice:55,marketGuidePrice:63.25,benchmarkProduct:"Bissell SpotClean",benchmarkContext:"Bissell SpotClean是美国市场热销的布艺清洗机。",media:[{type:"image",url:"🧽",isClientVisible:!0}],specs:{power:{value:500,unit:"W"},weight:{value:4.5,unit:"kg"}},certifications:[{name:"CE",code:"CE-2024-071",public:!0}],salesRestrictions:[],internalNotes:{collaboration:[],sensitive:[]}}]};const state={currentUser:null,currentRole:null,isClientMode:!1,selectedProductIds:[],lastNonClientHash:"",sidebarOpen:!1,filters:{search:"",categoryId:"",tags:[]},editingProduct:null,editingVendor:null,editingCategory:null,editingTag:null,editingTemplate:null,editingUser:null};function getCategoryById(e){return db.categories.find(t=>t.id===e)}function getVendorById(e){return db.vendors.find(t=>t.id===parseInt(e))}function getProductById(e){return db.products.find(t=>t.id===parseInt(e))}function getTagByName(e){return db.tags.find(t=>t.name===e)}function getTemplateByKey(e){return db.templates.find(t=>t.templateKey===e)}function getUserById(e){return db.users.find(t=>t.id===parseInt(e))}function getNextId(e){return 0===e.length?1:Math.max(...e.map(e=>e.id))+1}function filterByRole(e,t){const{currentRole:i,isClientMode:a}=state,o=a?"client":i;if("product"===t){const t=JSON.parse(JSON.stringify(e));if("sales"===o)delete t.vendorId,delete t.factoryPrice,delete t.moq,t.internalNotes={collaboration:(t.internalNotes?.collaboration)||[],sensitive:[]},t.certifications&&(t.certifications=t.certifications.map(e=>({...e,displayName:e.public?e.name:`${e.name} (内部)`})));else if("client"===o){if(delete t.vendorId,delete t.factoryPrice,delete t.marketGuidePrice,delete t.moq,delete t.benchmarkProduct,delete t.benchmarkContext,delete t.salesRestrictions,delete t.internalNotes,t.tags=t.tags.filter(e=>{const t=getTagByName(e);return t&&t.visibleTo.includes("client")}),t.certifications)t.certifications=t.certifications.filter(e=>e.public)}return t}return"vendor"===t&&"admin"!==o?null:e}function formatPrice(e){return"$"+e.toFixed(2)}function getTagColor(e){const t=getTagByName(e);return t?{color:t.color,bgColor:t.bgColor}:{color:"#8C8C8C",bgColor:"#FAFAFA"}}function matchRoute(e,t){const i=e.replace(/^#\//,"").split("/"),a=t.replace(/^#\//,"").split("/");return i.length===a.length&&a.every((e,t)=>!!e.startsWith(":")||e===i[t])}function extractParams(e,t){const i=e.replace(/^#\//,"").split("/"),a=t.replace(/^#\//,"").split("/"),o={};return a.forEach((e,t)=>{e.startsWith(":")&&(o[e.slice(1)]=i[t])}),o}const permissionRules=[{pattern:"#/login",roles:["*"],requireClientMode:null},{pattern:"#/products",roles:["admin"],requireClientMode:!1},{pattern:"#/product/:id",roles:["admin"],requireClientMode:!1},{pattern:"#/product-edit/:id",roles:["admin"],requireClientMode:!1},{pattern:"#/product-edit",roles:["admin"],requireClientMode:!1},{pattern:"#/compare",roles:["admin"],requireClientMode:!1},{pattern:"#/vendors",roles:["admin"],requireClientMode:!1},{pattern:"#/vendor/:id",roles:["admin"],requireClientMode:!1},{pattern:"#/vendor-edit/:id",roles:["admin"],requireClientMode:!1},{pattern:"#/vendor-edit",roles:["admin"],requireClientMode:!1},{pattern:"#/settings/:key",roles:["admin"],requireClientMode:!1},{pattern:"#/sales/products",roles:["sales","admin"],requireClientMode:!1},{pattern:"#/sales/product/:id",roles:["sales","admin"],requireClientMode:!1},{pattern:"#/sales/compare",roles:["sales","admin"],requireClientMode:!1},{pattern:"#/client/products",roles:["*"],requireClientMode:!0},{pattern:"#/client/product/:id",roles:["*"],requireClientMode:!0},{pattern:"#/client/compare",roles:["*"],requireClientMode:!0}];function guardRoute(e){const{currentRole:t,isClientMode:i}=state;if(!t)return"#/login"===e?e:"#/login";if("#/login"===e)return"sales"===t?"#/sales/products":"#/products";const a=permissionRules.find(t=>matchRoute(e,t.pattern));if(!a)return"sales"===t?"#/sales/products":"#/products";if(!0===a.requireClientMode&&!i)return"sales"===t?"#/sales/products":"#/products";if(!1===a.requireClientMode&&i)return"#/client/products";return"*"===a.roles[0]||a.roles.includes(t)?e:"#/sales/products"}function navigate(e){const t=guardRoute(e);t!==e?window.location.hash=t:window.location.hash=e}function router(){const e=window.location.hash||"#/login",t=guardRoute(e);if(t!==e)return void(window.location.hash=t);let i={};for(const a of permissionRules)if(matchRoute(e,a.pattern)){i=extractParams(e,a.pattern);break}"#/login"===e?renderLogin():"#/products"===e||"#/sales/products"===e||"#/client/products"===e?renderProductList():matchRoute(e,"#/product/:id")||matchRoute(e,"#/sales/product/:id")||matchRoute(e,"#/client/product/:id")?renderProductDetail(i.id):matchRoute(e,"#/product-edit/:id")||"#/product-edit"===e?renderProductEdit(i.id):"#/compare"===e||"#/sales/compare"===e||"#/client/compare"===e?renderProductCompare():"#/vendors"===e?renderVendorList():matchRoute(e,"#/vendor/:id")?renderVendorDetail(i.id):matchRoute(e,"#/vendor-edit/:id")||"#/vendor-edit"===e?renderVendorEdit(i.id):matchRoute(e,"#/settings/:key")?renderSettings(i.key):render404()}function login(e,t){const i=db.users.find(i=>i.username===e&&i.demoPassword===t);if(i){state.currentUser=i,state.currentRole=i.role;const e="sales"===i.role?"#/sales/products":"#/products";navigate(e)}else return"用户名或密码错误"}function logout(){state.currentUser=null,state.currentRole=null,state.isClientMode=!1,state.selectedProductIds=[],state.lastNonClientHash="",navigate("#/login")}function enableClientMode(){const e=window.location.hash||"#/login";state.lastNonClientHash=e,state.isClientMode=!0,e.startsWith("#/sales/product/")?navigate(e.replace("#/sales/product/","#/client/product/")):e.startsWith("#/product/")&&!e.includes("-edit")?navigate(e.replace("#/product/","#/client/product/")):"#/sales/products"===e||"#/products"===e?navigate("#/client/products"):"#/sales/compare"===e||"#/compare"===e?navigate("#/client/compare"):navigate("#/client/products")}function disableClientMode(){document.getElementById("clientModeModal").classList.add("active")}function cancelClientModeClose(){document.getElementById("clientModeModal").classList.remove("active"),document.getElementById("clientModePassword").value="",document.getElementById("clientModeError").style.display="none"}function confirmClientModeClose(){const e=document.getElementById("clientModePassword").value;e===state.currentUser.demoPassword?(state.isClientMode=!1,document.getElementById("clientModeModal").classList.remove("active"),document.getElementById("clientModePassword").value="",document.getElementById("clientModeError").style.display="none",navigate(state.lastNonClientHash||("sales"===state.currentRole?"#/sales/products":"#/products"))):document.getElementById("clientModeError").style.display="block"}function toggleClientMode(){state.isClientMode?disableClientMode():enableClientMode()}function toggleSidebar(){state.sidebarOpen=!state.sidebarOpen;const e=document.querySelector(".sidebar");e&&e.classList.toggle("active",state.sidebarOpen)}function getSidebarMenus(){const{currentRole:e,isClientMode:t}=state;return t?[{section:"产品管理",items:[{icon:"📦",label:"产品列表",hash:"#/client/products"},{icon:"⚖️",label:"产品对比",hash:"#/client/compare"}]}]:"admin"===e?[{section:"产品管理",items:[{icon:"📦",label:"产品列表",hash:"#/products"},{icon:"⚖️",label:"产品对比",hash:"#/compare"}]},{section:"供应商管理",items:[{icon:"🏭",label:"供应商列表",hash:"#/vendors"}]},{section:"系统设置",items:[{icon:"📁",label:"分类管理",hash:"#/settings/categories"},{icon:"🏷️",label:"标签管理",hash:"#/settings/tags"},{icon:"📋",label:"参数模板",hash:"#/settings/templates"},{icon:"👥",label:"用户管理",hash:"#/settings/users"}]}]:"sales"===e?[{section:"产品管理",items:[{icon:"📦",label:"产品列表",hash:"#/sales/products"},{icon:"⚖️",label:"产品对比",hash:"#/sales/compare"}]}]:[]}function renderTopbar(){if(!state.currentUser)return"";const{currentUser:e,isClientMode:t}=state;return`\n        <div class="topbar ${t?"client-mode-active":""}">\n          <div class="topbar-left">\n            <div class="topbar-menu-toggle" onclick="toggleSidebar()">☰</div>\n            <div class="topbar-logo" onclick="navigate('${"sales"===e.role?"#/sales/products":"#/products"}')">SMS</div>\n            ${t?'<div class="topbar-client-badge">👁 客户演示模式</div>':""}\n          </div>\n          <div class="topbar-right">\n            <button class="topbar-client-mode ${t?"active":""}" onclick="toggleClientMode()">\n              ${t?"🔒 退出演示模式":"👁 客户演示模式"}\n            </button>\n            <div class="topbar-user">\n              <div class="topbar-avatar" style="background: ${e.avatarBg}">${e.avatar}</div>\n              <div>\n                <div class="topbar-username">${e.realName}</div>\n                <div class="topbar-role">${"admin"===e.role?"管理员":"业务员"}</div>\n              </div>\n            </div>\n            <button class="topbar-logout" onclick="logout()">退出</button>\n          </div>\n        </div>\n      `}function renderSidebar(){if(!state.currentUser)return"";const e=getSidebarMenus(),t=window.location.hash;return`\n        <div class="sidebar ${state.sidebarOpen?"active":""}">\n          ${e.map(e=>`\n            <div class="sidebar-section">\n              <div class="sidebar-section-title">${e.section}</div>\n              ${e.items.map(e=>`\n                <div class="sidebar-menu-item ${t===e.hash||t.startsWith(e.hash.replace("s","product").replace("compare","product"))?"active":""}" onclick="navigate('${e.hash}'); state.sidebarOpen = false; router();">\n                  <span>${e.icon}</span>\n                  <span>${e.label}</span>\n                </div>\n              `).join("")}\n            </div>\n          `).join("")}\n        </div>\n      `}function renderLayout(e){const t=document.getElementById("app"),i=!!state.currentUser;t.innerHTML=`\n        ${i?renderTopbar():""}\n        ${i?renderSidebar():""}\n        <div class="main-content ${i?"":"no-sidebar full-width"}">\n          ${e}\n        </div>\n      `}function renderLogin(){document.getElementById("app").innerHTML=`\n        <div class="login-container">\n          <div class="login-brand">\n            <div class="login-brand-logo">SMS</div>\n            <div class="login-brand-title">外贸小家电供应商管理系统</div>\n            <div class="login-brand-subtitle">Supplier Management System</div>\n          </div>\n          <div class="login-form-section">\n            <div class="login-form-wrapper">\n              <div class="login-form-title">欢迎登录</div>\n              <form onsubmit="event.preventDefault(); handleLogin();">\n                <div class="form-group">\n                  <label class="form-label">用户名</label>\n                  <input type="text" id="loginUsername" class="form-input" placeholder="请输入用户名" required>\n                </div>\n                <div class="form-group">\n                  <label class="form-label">密码</label>\n                  <input type="password" id="loginPassword" class="form-input" placeholder="请输入密码" required>\n                  <div id="loginError" class="form-error" style="display: none;"></div>\n                </div>\n                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">登录</button>\n              </form>\n              <div class="login-test-accounts">\n                <div class="login-test-accounts-title">测试账号</div>\n                <div class="login-test-account">\n                  <span>管理员:admin</span>\n                  <span>密码:123456</span>\n                </div>\n                <div class="login-test-account">\n                  <span>业务员:sales</span>\n                  <span>密码:123456</span>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      `}function handleLogin(){const e=document.getElementById("loginUsername").value,t=document.getElementById("loginPassword").value,i=login(e,t);if(i){const e=document.getElementById("loginError");e.textContent=i,e.style.display="block"}}function renderProductList(){const{currentRole:e,isClientMode:t}=state,i=window.location.hash;let a="admin";i.startsWith("#/sales/")&&(a="sales"),i.startsWith("#/client/")&&(a="client");let o=db.products.map(e=>filterByRole(e,"product"));state.filters.search&&(o=o.filter(e=>e.name.toLowerCase().includes(state.filters.search.toLowerCase())||e.sku.toLowerCase().includes(state.filters.search.toLowerCase()))),state.filters.categoryId&&(o=o.filter(e=>e.categoryId===parseInt(state.filters.categoryId)));renderLayout(`\n        <div class="filter-bar">\n          <div class="filter-row">\n            <div class="filter-item flex-1">\n              <label class="form-label">搜索</label>\n              <input type="text" class="form-input" placeholder="产品名称或SKU" value="${state.filters.search}" oninput="state.filters.search = this.value; router();">\n            </div>\n            <div class="filter-item">\n              <label class="form-label">分类</label>\n              <select class="form-select" onchange="state.filters.categoryId = this.value; router();">\n                <option value="">全部分类</option>\n                ${db.categories.filter(e=>null!==e.parentId).map(e=>`\n                  <option value="${e.id}" ${state.filters.categoryId==e.id?"selected":""}>${e.name}</option>\n                `).join("")}\n              </select>\n            </div>\n            <div class="filter-item" style="display: flex; align-items: flex-end;">\n              <button class="btn btn-default" onclick="state.filters = { search: '', categoryId: '' }; router();">重置</button>\n            </div>\n          </div>\n        </div>\n        \n        ${"admin"===a?`\n          <div class="card">\n            <div class="card-header">\n              <div>\n                <div class="card-title">产品列表</div>\n                <div class="card-subtitle">共 ${o.length} 个产品</div>\n              </div>\n              <div class="card-actions">\n                <button class="btn btn-primary" onclick="navigate('#/product-edit')">➕ 新增产品</button>\n                <button class="btn btn-default" ${state.selectedProductIds.length<2||state.selectedProductIds.length>8?"disabled":""} onclick="navigate('#/compare')">⚖️ 开始对比 (${state.selectedProductIds.length})</button>\n              </div>\n            </div>\n          </div>\n        `:""}\n        \n        <div class="grid grid-3">\n          ${o.map(e=>{const t=getCategoryById(e.categoryId),o=state.selectedProductIds.includes(e.id);return`\n              <div class="product-card">\n                ${"admin"===a?`\n                  <input type="checkbox" class="product-card-checkbox" ${o?"checked":""} onchange="toggleProductSelection(${e.id})" onclick="event.stopPropagation();">\n                `:""}\n                <div class="product-card-image" onclick="navigate('${i.includes("client")?"#/client/product/":i.includes("sales")?"#/sales/product/":"#/product/"}${e.id}')">\n                  ${e.media[0]?.url||"📦"}\n                </div>\n                <div class="product-card-body" onclick="navigate('${i.includes("client")?"#/client/product/":i.includes("sales")?"#/sales/product/":"#/product/"}${e.id}')">\n                  <div class="product-card-name">${e.name}</div>\n                  <div class="product-card-sku">SKU: ${e.sku}</div>\n                  <div class="product-card-tags">\n                    ${e.tags?.map(e=>{const t=getTagColor(e);return`<span class="tag" style="background: ${t.bgColor}; color: ${t.color}">${e}</span>`}).join("")||""}\n                  </div>\n                  ${"sales"===a&&e.marketGuidePrice?`\n                    <div class="product-card-price">\n                      <span class="product-card-price-label">指导价</span>\n                      <span class="product-card-price-value">${formatPrice(e.marketGuidePrice)}</span>\n                    </div>\n                  `:""}\n                  ${"admin"===a&&e.marketGuidePrice?`\n                    <div class="product-card-price">\n                      <span class="product-card-price-label">指导价</span>\n                      <span class="product-card-price-value">${formatPrice(e.marketGuidePrice)}</span>\n                    </div>\n                  `:""}\n                  ${"admin"===a&&e.factoryPrice?`\n                    <div class="product-card-price">\n                      <span class="product-card-price-label">出厂价 🔒</span>\n                      <span class="product-card-price-value" style="color: #FF4D4F;">${formatPrice(e.factoryPrice)}</span>\n                    </div>\n                  `:""}\n                </div>\n              </div>\n            `}).join("")}\n        </div>\n      `)}function toggleProductSelection(e){const t=state.selectedProductIds.indexOf(e);t>-1?state.selectedProductIds.splice(t,1):state.selectedProductIds.length<8&&state.selectedProductIds.push(e),router()}function renderProductDetail(e){const t=getProductById(e);if(!t)return void render404();const i=filterByRole(t,"product"),a=getCategoryById(i.categoryId),o=i.vendorId?getVendorById(i.vendorId):null,n=a?.templateKey?getTemplateByKey(a.templateKey):null,r=window.location.hash;let s="admin",d="#/products";r.startsWith("#/sales/")&&(s="sales",d="#/sales/products"),r.startsWith("#/client/")&&(s="client",d="#/client/products"),renderLayout(`\n        <div class="card">\n          <div class="card-header">\n            <div>\n              <div class="card-title">${i.name}</div>\n              <div class="card-subtitle">SKU: ${i.sku}</div>\n            </div>\n            <div class="card-actions">\n              <button class="btn btn-default" onclick="navigate('${d}')">← 返回列表</button>\n              ${"admin"===s?`<button class="btn btn-primary" onclick="navigate('#/product-edit/${e}')">✏️ 编辑</button>`:""}\n            </div>\n          </div>\n          <div class="card-body">\n            <div style="display: grid; grid-template-columns: 400px 1fr; gap: 32px;">\n              <div>\n                <div class="media-gallery">\n                  <div class="media-main">${i.media[0]?.url||"📦"}</div>\n                </div>\n              </div>\n              \n              <div>\n                <div class="info-grid">\n                  <div class="info-item">\n                    <div class="info-label">品牌</div>\n                    <div class="info-value">${i.brand}</div>\n                  </div>\n                  <div class="info-item">\n                    <div class="info-label">分类</div>\n                    <div class="info-value">${a?.name||"-"}</div>\n                  </div>\n                  <div class="info-item">\n                    <div class="info-label">状态</div>\n                    <div class="info-value">${i.status}</div>\n                  </div>\n                  ${"admin"===s&&o?`\n                    <div class="info-item">\n                      <div class="info-label">供应商</div>\n                      <div class="info-value">\n                        <a href="#/vendor/${o.id}">${o.name}</a>\n                      </div>\n                    </div>\n                  `:""}\n                </div>\n                \n                ${i.tags?.length?`\n                  <div style="margin: 16px 0;">\n                    ${i.tags.map(e=>{const t=getTagColor(e);return`<span class="tag" style="background: ${t.bgColor}; color: ${t.color}">${e}</span>`}).join(" ")}\n                  </div>\n                `:""}\n                \n                ${"client"!==s&&(i.marketGuidePrice||i.factoryPrice)?`\n                  <div class="section">\n                    <div class="section-title">价格信息</div>\n                    ${"sales"===s&&i.marketGuidePrice?`\n                      <div class="alert alert-info">\n                        <div>\n                          <div style="font-weight: bold;">市场指导价</div>\n                          <div style="font-size: 24px; color: #1890FF; font-weight: bold; margin-top: 8px;">${formatPrice(i.marketGuidePrice)}</div>\n                        </div>\n                      </div>\n                    `:""}\n                    ${"admin"===s&&i.marketGuidePrice?`\n                      <div class="alert alert-info">\n                        <div>\n                          <div style="font-weight: bold;">市场指导价</div>\n                          <div style="font-size: 24px; color: #1890FF; font-weight: bold; margin-top: 8px;">${formatPrice(i.marketGuidePrice)}</div>\n                        </div>\n                      </div>\n                    `:""}\n                    ${"admin"===s&&i.factoryPrice?`\n                      <div class="alert alert-error">\n                        <div>\n                          <div style="font-weight: bold;">🔒 出厂价(机密)</div>\n                          <div style="font-size: 24px; color: #FF4D4F; font-weight: bold; margin-top: 8px;">${formatPrice(i.factoryPrice)}</div>\n                          <div style="font-size: 12px; color: #8C8C8C; margin-top: 4px;">MOQ: ${i.moq} pcs</div>\n                        </div>\n                      </div>\n                    `:""}\n                  </div>\n                `:""}\n                \n                ${"client"!==s&&i.benchmarkProduct?`\n                  <div class="section">\n                    <div class="section-title">🎯 竞品对标</div>\n                    <div class="alert alert-info">\n                      <div>\n                        <div style="font-weight: bold;">对标产品: ${i.benchmarkProduct}</div>\n                        ${i.benchmarkContext?`<div style="margin-top: 8px;">${i.benchmarkContext}</div>`:""}\n                      </div>\n                    </div>\n                  </div>\n                `:""}\n                \n                ${"admin"===s&&i.salesRestrictions?.length?`\n                  <div class="section">\n                    <div class="section-title">🚫 销售限制</div>\n                    <div class="alert alert-warning">\n                      ${i.salesRestrictions.map(e=>`\n                        <div style="padding: 4px 0;"><strong>${e.country}</strong> - ${e.client}</div>\n                      `).join("")}\n                    </div>\n                  </div>\n                `:""}\n                \n                ${n?`\n                  <div class="section">\n                    <div class="section-title">技术参数</div>\n                    <div class="info-grid">\n                      ${n.parameters.map(e=>{const t=i.specs?.[e.fieldKey];let a="—";return null!=t&&(a="number"===e.type?`${t.value} ${t.unit}`:t),`\n                          <div class="info-item">\n                            <div class="info-label">${e.label}</div>\n                            <div class="info-value">${a}</div>\n                          </div>\n                        `}).join("")}\n                    </div>\n                  </div>\n                `:""}\n                \n                ${i.certifications?.length?`\n                  <div class="section">\n                    <div class="section-title">认证信息</div>\n                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">\n                      ${i.certifications.map(e=>`\n                        <span class="tag tag-blue">${e.displayName||e.name}</span>\n                      `).join("")}\n                    </div>\n                  </div>\n                `:""}\n                \n                ${"client"!==s&&i.internalNotes?.collaboration?.length?`\n                  <div class="section">\n                    <div class="section-title">💡 协作备注</div>\n                    ${i.internalNotes.collaboration.map(e=>`\n                      <div class="alert alert-${e.type}">\n                        <div>\n                          <div style="font-weight: bold;">${e.icon} ${e.title}</div>\n                          <div style="margin-top: 4px;">${e.content}</div>\n                        </div>\n                      </div>\n                    `).join("")}\n                  </div>\n                `:""}\n                \n                ${"admin"===s&&i.internalNotes?.sensitive?.length?`\n                  <div class="section">\n                    <div class="section-title">🔒 机密资料(仅管理员)</div>\n                    ${i.internalNotes.sensitive.map(e=>`\n                      <div class="alert alert-${e.type}">\n                        <div>\n                          <div style="font-weight: bold;">${e.icon} ${e.title}</div>\n                          <div style="margin-top: 4px;">${e.content}</div>\n                        </div>\n                      </div>\n                    `).join("")}\n                  </div>\n                `:""}\n              </div>\n            </div>\n          </div>\n        </div>\n      `)}function renderProductCompare(){const e=window.location.hash;let t="admin",i="#/products";e.startsWith("#/sales/")&&(t="sales",i="#/sales/products"),e.startsWith("#/client/")&&(t="client",i="#/client/products");const a=state.selectedProductIds.map(e=>{const t=getProductById(e);return t?filterByRole(t,"product"):null}).filter(Boolean);if(0===a.length)return void renderLayout(`\n          <div class="card">\n            <div class="card-body">\n              <div class="placeholder-page">\n                <div class="placeholder-icon">⚖️</div>\n                <div class="placeholder-title">产品对比</div>\n                <div class="placeholder-desc">还没有选择对比产品,请返回列表选择2-8个产品</div>\n                <div class="placeholder-actions">\n                  <button class="btn btn-primary" onclick="navigate('${i}')">← 返回列表</button>\n                </div>\n              </div>\n            </div>\n          </div>\n        `);const o=a.map(e=>getCategoryById(e.categoryId)),n=new Map;o.map(e=>e?.templateKey?getTemplateByKey(e.templateKey):null).forEach(e=>{e&&e.parameters.forEach(e=>{n.has(e.fieldKey)||n.set(e.fieldKey,e)})}),renderLayout(`\n        <div class="card">\n          <div class="card-header">\n            <div>\n              <div class="card-title">产品对比</div>\n              <div class="card-subtitle">正在对比 ${a.length} 个产品</div>\n            </div>\n            <div class="card-actions">\n              <button class="btn btn-default" onclick="navigate('${i}')">← 返回列表</button>\n              <button class="btn btn-default" onclick="state.selectedProductIds = []; navigate('${i}')">🗑️ 清空对比</button>\n            </div>\n          </div>\n          <div class="card-body">\n            <div class="compare-container">\n              <table class="compare-table">\n                <thead>\n                  <tr>\n                    <th style="min-width: 150px;">参数</th>\n                    ${a.map(e=>`\n                      <th>\n                        <div class="compare-product-header">\n                          <div class="compare-product-icon">${e.media[0]?.url||"📦"}</div>\n                          <div class="compare-product-name">${e.name}</div>\n                          <div class="compare-product-sku">${e.sku}</div>\n                          <div class="compare-remove" onclick="removeFromCompare(${e.id})">移除</div>\n                        </div>\n                      </th>\n                    `).join("")}\n                  </tr>\n                </thead>\n                <tbody>\n                  ${"sales"===t?`\n                    <tr style="background: #FFF7E6;">\n                      <td><strong>市场指导价</strong></td>\n                      ${a.map(e=>`\n                        <td style="text-align: center; font-size: 18px; font-weight: bold; color: #1890FF;">\n                          ${e.marketGuidePrice?formatPrice(e.marketGuidePrice):"—"}\n                        </td>\n                      `).join("")}\n                    </tr>\n                  `:""}\n                  ${"admin"===t?`\n                    <tr style="background: #FFF7E6;">\n                      <td><strong>市场指导价</strong></td>\n                      ${a.map(e=>`\n                        <td style="text-align: center; font-size: 18px; font-weight: bold; color: #1890FF;">\n                          ${e.marketGuidePrice?formatPrice(e.marketGuidePrice):"—"}\n                        </td>\n                      `).join("")}\n                    </tr>\n                    <tr style="background: #FFF1F0;">\n                      <td><strong>🔒 出厂价</strong></td>\n                      ${a.map(e=>`\n                        <td style="text-align: center; font-size: 18px; font-weight: bold; color: #FF4D4F;">\n                          ${e.factoryPrice?formatPrice(e.factoryPrice):"—"}\n                        </td>\n                      `).join("")}\n                    </tr>\n                    <tr style="background: #FFF1F0;">\n                      <td><strong>🔒 MOQ</strong></td>\n                      ${a.map(e=>`\n                        <td style="text-align: center;">\n                          ${e.moq?`${e.moq} pcs`:"—"}\n                        </td>\n                      `).join("")}\n                    </tr>\n                  `:""}\n                  ${"client"!==t?`\n                    <tr style="background: #E6F7FF;">\n                      <td><strong>🎯 对标产品</strong></td>\n                      ${a.map(e=>`\n                        <td style="text-align: center;">\n                          ${e.benchmarkProduct||"—"}\n                        </td>\n                      `).join("")}\n                    </tr>\n                  `:""}\n                  ${Array.from(n.values()).map(e=>`\n                    <tr>\n                      <td><strong>${e.label}</strong></td>\n                      ${a.map(t=>{const i=t.specs?.[e.fieldKey];let a="—";return null!=i&&(a="number"===e.type?`${i.value} ${i.unit}`:i),`<td style="text-align: center;">${a}</td>`}).join("")}\n                    </tr>\n                  `).join("")}\n                </tbody>\n              </table>\n            </div>\n          </div>\n        </div>\n      `)}function removeFromCompare(e){const t=state.selectedProductIds.indexOf(e);t>-1&&state.selectedProductIds.splice(t,1),router()}function renderProductEdit(e){renderLayout(`\n        <div class="placeholder-page">\n          <div class="placeholder-icon">🚧</div>\n          <div class="placeholder-title">功能开发中</div>\n          <div class="placeholder-desc">产品编辑功能正在开发中</div>\n          <div class="placeholder-actions">\n            <button class="btn btn-primary" onclick="navigate('#/products')">← 返回产品列表</button>\n          </div>\n        </div>\n      `)}function renderVendorList(){renderLayout(`\n        <div class="placeholder-page">\n          <div class="placeholder-icon">🏭</div>\n          <div class="placeholder-title">供应商列表</div>\n          <div class="placeholder-desc">供应商管理功能演示</div>\n          <div class="placeholder-actions">\n            <button class="btn btn-primary" onclick="navigate('#/products')">← 返回产品列表</button>\n          </div>\n        </div>\n      `)}function renderVendorDetail(e){renderLayout(`\n        <div class="placeholder-page">\n          <div class="placeholder-icon">🏭</div>\n          <div class="placeholder-title">供应商详情</div>\n          <div class="placeholder-desc">供应商详情功能演示</div>\n          <div class="placeholder-actions">\n            <button class="btn btn-primary" onclick="navigate('#/vendors')">← 返回供应商列表</button>\n          </div>\n        </div>\n      `)}function renderVendorEdit(e){renderLayout(`\n        <div class="placeholder-page">\n          <div class="placeholder-icon">🚧</div>\n          <div class="placeholder-title">功能开发中</div>\n          <div class="placeholder-desc">供应商编辑功能正在开发中</div>\n          <div class="placeholder-actions">\n            <button class="btn btn-primary" onclick="navigate('#/vendors')">← 返回供应商列表</button>\n          </div>\n        </div>\n      `)}function renderSettings(e){renderLayout(`\n        <div class="placeholder-page">\n          <div class="placeholder-icon">⚙️</div>\n          <div class="placeholder-title">系统设置</div>\n          <div class="placeholder-desc">设置功能演示</div>\n          <div class="placeholder-actions">\n            <button class="btn btn-primary" onclick="navigate('#/products')">← 返回产品列表</button>\n          </div>\n        </div>\n      `)}function render404(){renderLayout(`\n        <div class="placeholder-page">\n          <div class="placeholder-icon">❌</div>\n          <div class="placeholder-title">页面未找到</div>\n          <div class="placeholder-desc">404 - Not Found</div>\n          <div class="placeholder-actions">\n            <button class="btn btn-primary" onclick="navigate('${"sales"===state.currentRole?"#/sales/products":"#/products"}')">返回首页</button>\n          </div>\n        </div>\n      `)}window.addEventListener("hashchange",router),window.addEventListener("load",router);
+    const db = {
+      users: [
+        { id: 1, username: "admin", demoPassword: "123456", realName: "张管理", role: "admin", avatar: "张", avatarBg: "#1890FF", status: "active", phone: "138-0000-0001", email: "admin@sms.com" },
+        { id: 2, username: "sales", demoPassword: "123456", realName: "李业务", role: "sales", avatar: "李", avatarBg: "#52C41A", status: "active", phone: "138-0000-0002", email: "sales@sms.com" },
+        { id: 3, username: "sales2", demoPassword: "123456", realName: "王销售", role: "sales", avatar: "王", avatarBg: "#FA8C16", status: "active", phone: "138-0000-0003", email: "sales2@sms.com" }
+      ],
+      categories: [
+        { id: 1, name: "厨房电器", parentId: null, sortOrder: 1, enabled: true, templateKey: null },
+        { id: 2, name: "榨汁机", parentId: 1, templateKey: "juicer", sortOrder: 11, enabled: true },
+        { id: 5, name: "咖啡机", parentId: 1, templateKey: "coffee", sortOrder: 14, enabled: true },
+        { id: 6, name: "空气炸锅", parentId: 1, templateKey: "airfryer", sortOrder: 15, enabled: true },
+        { id: 10, name: "清洁电器", parentId: null, sortOrder: 2, enabled: true, templateKey: null },
+        { id: 11, name: "吸尘器", parentId: 10, templateKey: "vacuum", sortOrder: 21, enabled: true },
+        { id: 12, name: "扫地机器人", parentId: 10, templateKey: "robot", sortOrder: 22, enabled: true },
+        { id: 13, name: "蒸汽拖把", parentId: 10, templateKey: "steammop", sortOrder: 23, enabled: true },
+        { id: 14, name: "布艺清洗机", parentId: 10, templateKey: "fabriccleaner", sortOrder: 24, enabled: true }
+      ],
+      tags: [
+        { id: 1, name: "热销", group: "feature", color: "#FA8C16", bgColor: "#FFF7E6", visibleTo: ["admin", "sales", "client"], enabled: true },
+        { id: 2, name: "OEM可定制", group: "strategy", color: "#52C41A", bgColor: "#F6FFED", visibleTo: ["admin", "sales"], enabled: true },
+        { id: 3, name: "新品", group: "feature", color: "#1890FF", bgColor: "#E6F7FF", visibleTo: ["admin", "sales", "client"], enabled: true },
+        { id: 4, name: "独家", group: "status", color: "#722ED1", bgColor: "#F9F0FF", visibleTo: ["admin"], enabled: true },
+        { id: 5, name: "环保", group: "feature", color: "#13C2C2", bgColor: "#E6FFFB", visibleTo: ["admin", "sales", "client"], enabled: true },
+        { id: 6, name: "静音", group: "feature", color: "#52C41A", bgColor: "#F6FFED", visibleTo: ["admin", "sales", "client"], enabled: true },
+        { id: 7, name: "CE认证", group: "certification", color: "#1890FF", bgColor: "#E6F7FF", visibleTo: ["admin", "sales", "client"], enabled: true },
+        { id: 8, name: "RoHS认证", group: "certification", color: "#1890FF", bgColor: "#E6F7FF", visibleTo: ["admin", "sales", "client"], enabled: true }
+      ],
+      templates: [
+        { id: 1, templateKey: "vacuum", name: "吸尘器参数模板", enabled: true, parameters: [
+          { fieldKey: "power", label: "功率", type: "number", unit: "W", required: true },
+          { fieldKey: "battery_capacity", label: "电池容量", type: "number", unit: "mAh", required: true },
+          { fieldKey: "voltage", label: "电压", type: "number", unit: "V", required: true },
+          { fieldKey: "runtime", label: "续航时间", type: "number", unit: "min", required: true },
+          { fieldKey: "dust_capacity", label: "尘杯容量", type: "number", unit: "ml", required: true },
+          { fieldKey: "weight", label: "净重", type: "number", unit: "kg", required: true },
+          { fieldKey: "noise_level", label: "噪音等级", type: "number", unit: "dB", required: false }
+        ]},
+        { id: 2, templateKey: "juicer", name: "榨汁机参数模板", enabled: true, parameters: [
+          { fieldKey: "power", label: "功率", type: "number", unit: "W", required: true },
+          { fieldKey: "capacity", label: "容量", type: "number", unit: "ml", required: true },
+          { fieldKey: "voltage", label: "电压", type: "number", unit: "V", required: true },
+          { fieldKey: "speed", label: "转速", type: "number", unit: "RPM", required: true },
+          { fieldKey: "weight", label: "净重", type: "number", unit: "kg", required: true }
+        ]},
+        { id: 3, templateKey: "airfryer", name: "空气炸锅参数模板", enabled: true, parameters: [
+          { fieldKey: "power", label: "功率", type: "number", unit: "W", required: true },
+          { fieldKey: "capacity", label: "容量", type: "number", unit: "ml", required: true },
+          { fieldKey: "voltage", label: "电压", type: "number", unit: "V", required: true },
+          { fieldKey: "temp_range", label: "温度范围", type: "text", unit: "", required: true },
+          { fieldKey: "weight", label: "净重", type: "number", unit: "kg", required: true }
+        ]}
+      ],
+      vendors: [
+        { id: 1, name: "深圳清洁设备科技有限公司", icon: "🏭", rating: 4, established: 2015, location: { province: "广东省", city: "深圳市", district: "宝安区" }, address: "广东省深圳市宝安区西乡街道固戍社区宝源路1号F栋", mainCategories: ["吸尘器", "扫地机器人", "蒸汽拖把"], cooperatedBrands: ["Philips", "Midea", "Bear"], factoryCerts: ["ISO 9001", "BSCI"], productComplianceExperience: ["CE", "RoHS", "FCC", "UL"], productCount: 4, cooperationYears: 3, avgLeadTime: 30, media: [{ type: "image", title: "工厂外观", url: "🏭" }, { type: "image", title: "生产车间", url: "⚙️" }, { type: "image", title: "质检中心", url: "🔬" }, { type: "video", title: "工厂介绍视频", url: "🎬" }], adminOnly: { legalPerson: "王建国", capitalCNY: 5000000, employeesRange: { min: 50, max: 100 }, contact: { person: "王总", position: "总经理", phone: "0755-8888-6666", mobile: "138-0000-8888", email: "wang@szcleaner.com" } } },
+        { id: 2, name: "浙江厨电智造有限公司", icon: "🏭", rating: 5, established: 2012, location: { province: "浙江省", city: "宁波市", district: "慈溪市" }, address: "浙江省宁波市慈溪市观海卫镇工业园区创新路88号", mainCategories: ["榨汁机", "破壁机", "搅拌机"], cooperatedBrands: ["Midea", "Joyoung", "Bear"], factoryCerts: ["ISO 9001", "ISO 14001"], productComplianceExperience: ["CE", "RoHS", "FDA"], productCount: 2, cooperationYears: 5, avgLeadTime: 25, media: [{ type: "image", title: "工厂大门", url: "🏭" }, { type: "image", title: "装配线", url: "🔧" }, { type: "video", title: "生产流程", url: "🎬" }], adminOnly: { legalPerson: "李明华", capitalCNY: 8000000, employeesRange: { min: 100, max: 200 }, contact: { person: "李总", position: "董事长", phone: "0574-6688-9999", mobile: "139-0000-6666", email: "li@zjkitchen.com" } } },
+        { id: 3, name: "广东小家电制造股份有限公司", icon: "🏭", rating: 4, established: 2010, location: { province: "广东省", city: "佛山市", district: "顺德区" }, address: "广东省佛山市顺德区容桂街道华口工业区振华路28号", mainCategories: ["空气炸锅", "电烤箱"], cooperatedBrands: ["Midea", "Galanz"], factoryCerts: ["ISO 9001", "BSCI"], productComplianceExperience: ["CE", "RoHS", "CB"], productCount: 2, cooperationYears: 4, avgLeadTime: 35, media: [{ type: "image", title: "厂区全景", url: "🏭" }, { type: "image", title: "研发中心", url: "💡" }], adminOnly: { legalPerson: "张伟强", capitalCNY: 12000000, employeesRange: { min: 200, max: 500 }, contact: { person: "张总", position: "总经理", phone: "0757-2888-6666", mobile: "136-0000-9999", email: "zhang@gdappliance.com" } } }
+      ],
+      products: [
+        { id: 1, sku: "VC-5000", name: "无线手持吸尘器 Pro", categoryId: 11, brand: "CleanPro", tags: ["热销", "OEM可定制", "CE认证"], status: "在售", vendorId: 1, moq: 500, factoryPrice: 22, marketGuidePrice: 25.3, benchmarkProduct: "Shark Navigator NV360", benchmarkContext: "Navigator是美国市场最受欢迎的立式吸尘器之一", media: [{ type: "image", title: "产品主图", url: "🌪️" }, { type: "image", title: "产品侧面", url: "📷" }, { type: "video", title: "产品演示视频", url: "🎬" }], datasheets: [{ name: "产品规格书", filename: "VC-5000-Spec.pdf", icon: "📄" }, { name: "用户手册", filename: "VC-5000-Manual.pdf", icon: "📘" }], specs: { power: { value: 120, unit: "W" }, battery_capacity: { value: 2500, unit: "mAh" }, voltage: { value: 22, unit: "V" }, runtime: { value: 45, unit: "min" }, dust_capacity: { value: 500, unit: "ml" }, weight: { value: 1.5, unit: "kg" }, noise_level: { value: 68, unit: "dB" } }, certifications: [{ name: "CE", code: "CE-2024-001", public: true, fileIcon: "📜" }, { name: "RoHS", code: "RoHS-2024-002", public: true, fileIcon: "📜" }, { name: "UL", code: "UL-2024-004", public: false, fileIcon: "📜" }], salesRestrictions: [{ country: "US", client: "Home Depot" }, { country: "EU", client: "MediaMarkt" }], internalNotes: { collaboration: [{ type: "info", icon: "💡", title: "市场反馈", content: "客户反馈电池续航表现优异" }], sensitive: [{ type: "warning", icon: "🔒", title: "成本机密", content: "出厂价$22.00为机密信息" }] } },
+        { id: 2, sku: "JM-2000", name: "多功能破壁料理机", categoryId: 2, brand: "JoyMix", tags: ["热销", "CE认证"], status: "在售", vendorId: 2, moq: 300, factoryPrice: 45, marketGuidePrice: 51.75, benchmarkProduct: "Vitamix E310", benchmarkContext: "E310是Vitamix入门级破壁机", media: [{ type: "image", title: "产品主图", url: "🥤" }, { type: "image", title: "配件展示", url: "📷" }], datasheets: [{ name: "产品规格书", filename: "JM-2000-Spec.pdf", icon: "📄" }], specs: { power: { value: 1500, unit: "W" }, capacity: { value: 2000, unit: "ml" }, voltage: { value: 220, unit: "V" }, speed: { value: 30000, unit: "RPM" }, weight: { value: 3.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-011", public: true, fileIcon: "📜" }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 3, sku: "AF-3500", name: "智能空气炸锅 3.5L", categoryId: 6, brand: "AirFry Pro", tags: ["新品", "独家", "CE认证"], status: "在售", vendorId: 3, moq: 500, factoryPrice: 38, marketGuidePrice: 43.7, benchmarkProduct: "Philips HD9252", benchmarkContext: "HD9252是飞利浦经典款空气炸锅", media: [{ type: "image", title: "产品主图", url: "🍟" }, { type: "video", title: "烹饪演示", url: "🎬" }], datasheets: [{ name: "产品规格书", filename: "AF-3500-Spec.pdf", icon: "📄" }], specs: { power: { value: 1800, unit: "W" }, capacity: { value: 3500, unit: "ml" }, voltage: { value: 220, unit: "V" }, temp_range: "80-200°C", weight: { value: 4.2, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-021", public: true, fileIcon: "📜" }], salesRestrictions: [{ country: "EU", client: "MediaMarkt" }], internalNotes: { collaboration: [], sensitive: [{ type: "warning", icon: "🔒", title: "独家协议", content: "MediaMarkt有欧盟市场独家销售权" }] } },
+        { id: 4, sku: "CM-800", name: "全自动意式咖啡机", categoryId: 5, brand: "BrewMaster", tags: ["热销", "CE认证"], status: "在售", vendorId: 1, moq: 200, factoryPrice: 85, marketGuidePrice: 97.75, benchmarkProduct: "DeLonghi Magnifica", benchmarkContext: "Magnifica是德龙入门级全自动咖啡机", media: [{ type: "image", url: "☕" }], specs: { power: { value: 1200, unit: "W" }, capacity: { value: 800, unit: "ml" }, voltage: { value: 220, unit: "V" }, weight: { value: 2.8, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-031", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 5, sku: "SM-1200", name: "智能蒸汽拖把", categoryId: 13, brand: "SteamClean", tags: ["新品", "环保", "CE认证"], status: "在售", vendorId: 1, moq: 400, factoryPrice: 32, marketGuidePrice: 36.8, benchmarkProduct: "Shark Steam Mop", benchmarkContext: "Shark Steam Mop是美国市场热销的蒸汽拖把", media: [{ type: "image", url: "🧹" }], specs: { power: { value: 1500, unit: "W" }, weight: { value: 2.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-041", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 6, sku: "RV-2000", name: "智能扫地机器人", categoryId: 12, brand: "RoboVac", tags: ["热销", "静音", "CE认证"], status: "在售", vendorId: 1, moq: 300, factoryPrice: 120, marketGuidePrice: 138, benchmarkProduct: "iRobot Roomba 694", benchmarkContext: "Roomba 694是iRobot入门级扫地机器人", media: [{ type: "image", url: "🤖" }], specs: { power: { value: 25, unit: "W" }, battery_capacity: { value: 2600, unit: "mAh" }, voltage: { value: 14.4, unit: "V" }, runtime: { value: 90, unit: "min" }, dust_capacity: { value: 600, unit: "ml" }, weight: { value: 2.8, unit: "kg" }, noise_level: { value: 55, unit: "dB" } }, certifications: [{ name: "CE", code: "CE-2024-051", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 7, sku: "BM-500", name: "便携式榨汁杯", categoryId: 2, brand: "BlendMini", tags: ["新品", "CE认证"], status: "在售", vendorId: 2, moq: 500, factoryPrice: 12, marketGuidePrice: 13.8, benchmarkProduct: "BlendJet 2", benchmarkContext: "BlendJet 2是美国热销的便携式榨汁杯", media: [{ type: "image", url: "🥤" }], specs: { power: { value: 60, unit: "W" }, capacity: { value: 500, unit: "ml" }, voltage: { value: 7.4, unit: "V" }, speed: { value: 20000, unit: "RPM" }, weight: { value: 0.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-061", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } },
+        { id: 8, sku: "FC-800", name: "布艺清洗机", categoryId: 14, brand: "FabricCare", tags: ["新品", "CE认证"], status: "在售", vendorId: 3, moq: 300, factoryPrice: 55, marketGuidePrice: 63.25, benchmarkProduct: "Bissell SpotClean", benchmarkContext: "Bissell SpotClean是美国市场热销的布艺清洗机", media: [{ type: "image", url: "🧽" }], specs: { power: { value: 500, unit: "W" }, weight: { value: 4.5, unit: "kg" } }, certifications: [{ name: "CE", code: "CE-2024-071", public: true }], salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } }
+      ]
+    };
+
+    const state = { currentUser: null, currentRole: null, isClientMode: false, selectedProductIds: [], lastNonClientHash: "", sidebarOpen: false, filters: { search: "", categoryId: "" }, editingItem: null, editingType: null, editingParams: [], editingVendorMedia: [], editingProductMedia: [], editingProductDatasheets: [], editingProductCerts: [] };
+
+    function getCategoryById(id) { return db.categories.find(c => c.id === id); }
+    function getVendorById(id) { return db.vendors.find(v => v.id === parseInt(id)); }
+    function getProductById(id) { return db.products.find(p => p.id === parseInt(id)); }
+    function getTagByName(name) { return db.tags.find(t => t.name === name); }
+    function getTemplateByKey(key) { return db.templates.find(t => t.templateKey === key); }
+    function getUserById(id) { return db.users.find(u => u.id === parseInt(id)); }
+    function getNextId(arr) { return arr.length === 0 ? 1 : Math.max(...arr.map(i => i.id)) + 1; }
+    function formatPrice(p) { return "$" + p.toFixed(2); }
+    function formatMoney(n) { return "¥" + (n / 10000).toFixed(0) + "万"; }
+    function getTagColor(name) { var t = getTagByName(name); return t ? { color: t.color, bgColor: t.bgColor } : { color: "#8C8C8C", bgColor: "#FAFAFA" }; }
+    function showToast(msg, type) { var t = document.getElementById("toast"); t.textContent = msg; t.className = "toast show toast-" + (type || "success"); setTimeout(function() { t.classList.remove("show"); }, 3000); }
+
+    function filterByRole(item, type) {
+      var effectiveRole = state.isClientMode ? "client" : state.currentRole;
+      if (type === "product") {
+        var p = JSON.parse(JSON.stringify(item));
+        if (effectiveRole === "sales") { delete p.vendorId; delete p.factoryPrice; delete p.moq; p.internalNotes = { collaboration: p.internalNotes ? p.internalNotes.collaboration || [] : [], sensitive: [] }; }
+        else if (effectiveRole === "client") { delete p.vendorId; delete p.factoryPrice; delete p.marketGuidePrice; delete p.moq; delete p.benchmarkProduct; delete p.benchmarkContext; delete p.salesRestrictions; delete p.internalNotes; p.tags = p.tags.filter(function(t) { var tag = getTagByName(t); return tag && tag.visibleTo.indexOf("client") !== -1; }); if (p.certifications) p.certifications = p.certifications.filter(function(c) { return c.public; }); }
+        return p;
+      }
+      if (type === "vendor" && effectiveRole !== "admin") return null;
+      return item;
+    }
+
+    function matchRoute(hash, pattern) { var h = hash.replace(/^#\//, "").split("/"); var p = pattern.replace(/^#\//, "").split("/"); return h.length === p.length && p.every(function(s, i) { return s.charAt(0) === ":" || s === h[i]; }); }
+    function extractParams(hash, pattern) { var h = hash.replace(/^#\//, "").split("/"); var p = pattern.replace(/^#\//, "").split("/"); var params = {}; p.forEach(function(s, i) { if (s.charAt(0) === ":") params[s.slice(1)] = h[i]; }); return params; }
+
+    var permissionRules = [
+      { pattern: "#/login", roles: ["*"], requireClientMode: null },
+      { pattern: "#/products", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/product/:id", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/product-edit/:id", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/product-edit", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/compare", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/vendors", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/vendor/:id", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/vendor-edit/:id", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/vendor-edit", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/settings/:key", roles: ["admin"], requireClientMode: false },
+      { pattern: "#/sales/products", roles: ["sales", "admin"], requireClientMode: false },
+      { pattern: "#/sales/product/:id", roles: ["sales", "admin"], requireClientMode: false },
+      { pattern: "#/sales/compare", roles: ["sales", "admin"], requireClientMode: false },
+      { pattern: "#/client/products", roles: ["*"], requireClientMode: true },
+      { pattern: "#/client/product/:id", roles: ["*"], requireClientMode: true },
+      { pattern: "#/client/compare", roles: ["*"], requireClientMode: true }
+    ];
+
+    function guardRoute(hash) {
+      var currentRole = state.currentRole, isClientMode = state.isClientMode;
+      if (!currentRole) return hash === "#/login" ? hash : "#/login";
+      if (hash === "#/login") return currentRole === "sales" ? "#/sales/products" : "#/products";
+      var rule = null;
+      for (var i = 0; i < permissionRules.length; i++) { if (matchRoute(hash, permissionRules[i].pattern)) { rule = permissionRules[i]; break; } }
+      if (!rule) return currentRole === "sales" ? "#/sales/products" : "#/products";
+      if (rule.requireClientMode === true && !isClientMode) return currentRole === "sales" ? "#/sales/products" : "#/products";
+      if (rule.requireClientMode === false && isClientMode) return "#/client/products";
+      if (rule.roles[0] !== "*" && rule.roles.indexOf(currentRole) === -1) return "#/sales/products";
+      return hash;
+    }
+
+    function navigate(hash) { window.location.hash = guardRoute(hash); }
+
+    function router() {
+      var hash = window.location.hash || "#/login";
+      var target = guardRoute(hash);
+      if (target !== hash) { window.location.hash = target; return; }
+      var params = {};
+      for (var i = 0; i < permissionRules.length; i++) { if (matchRoute(hash, permissionRules[i].pattern)) { params = extractParams(hash, permissionRules[i].pattern); break; } }
+      if (hash === "#/login") renderLogin();
+      else if (hash === "#/products" || hash === "#/sales/products" || hash === "#/client/products") renderProductList();
+      else if (matchRoute(hash, "#/product/:id") || matchRoute(hash, "#/sales/product/:id") || matchRoute(hash, "#/client/product/:id")) renderProductDetail(params.id);
+      else if (matchRoute(hash, "#/product-edit/:id") || hash === "#/product-edit") renderProductEdit(params.id);
+      else if (hash === "#/compare" || hash === "#/sales/compare" || hash === "#/client/compare") renderProductCompare();
+      else if (hash === "#/vendors") renderVendorList();
+      else if (matchRoute(hash, "#/vendor/:id")) renderVendorDetail(params.id);
+      else if (matchRoute(hash, "#/vendor-edit/:id") || hash === "#/vendor-edit") renderVendorEdit(params.id);
+      else if (matchRoute(hash, "#/settings/:key")) renderSettings(params.key);
+      else render404();
+    }
+
+    function login(username, password) { var user = db.users.find(function(u) { return u.username === username && u.demoPassword === password; }); if (user) { state.currentUser = user; state.currentRole = user.role; navigate(user.role === "sales" ? "#/sales/products" : "#/products"); } else { return "用户名或密码错误"; } }
+    function logout() { state.currentUser = null; state.currentRole = null; state.isClientMode = false; state.selectedProductIds = []; state.lastNonClientHash = ""; navigate("#/login"); }
+    function enableClientMode() { var hash = window.location.hash || "#/login"; state.lastNonClientHash = hash; state.isClientMode = true; if (hash.indexOf("#/sales/product/") === 0) navigate(hash.replace("#/sales/product/", "#/client/product/")); else if (hash.indexOf("#/product/") === 0 && hash.indexOf("-edit") === -1) navigate(hash.replace("#/product/", "#/client/product/")); else if (hash === "#/sales/products" || hash === "#/products") navigate("#/client/products"); else if (hash === "#/sales/compare" || hash === "#/compare") navigate("#/client/compare"); else navigate("#/client/products"); }
+    function disableClientMode() { document.getElementById("clientModeModal").classList.add("active"); }
+    function cancelClientModeClose() { document.getElementById("clientModeModal").classList.remove("active"); document.getElementById("clientModePassword").value = ""; document.getElementById("clientModeError").style.display = "none"; }
+    function confirmClientModeClose() { var pwd = document.getElementById("clientModePassword").value; if (pwd === state.currentUser.demoPassword) { state.isClientMode = false; document.getElementById("clientModeModal").classList.remove("active"); document.getElementById("clientModePassword").value = ""; document.getElementById("clientModeError").style.display = "none"; navigate(state.lastNonClientHash || (state.currentRole === "sales" ? "#/sales/products" : "#/products")); } else { document.getElementById("clientModeError").style.display = "block"; } }
+    function toggleClientMode() { state.isClientMode ? disableClientMode() : enableClientMode(); }
+    function toggleSidebar() { state.sidebarOpen = !state.sidebarOpen; var sidebar = document.querySelector(".sidebar"); if (sidebar) sidebar.classList.toggle("active", state.sidebarOpen); }
+
+    function getSidebarMenus() {
+      var currentRole = state.currentRole, isClientMode = state.isClientMode;
+      if (isClientMode) return [{ section: "产品管理", items: [{ icon: "📦", label: "产品列表", hash: "#/client/products" }, { icon: "⚖️", label: "产品对比", hash: "#/client/compare" }] }];
+      if (currentRole === "admin") return [{ section: "产品管理", items: [{ icon: "📦", label: "产品列表", hash: "#/products" }, { icon: "⚖️", label: "产品对比", hash: "#/compare" }] }, { section: "供应商管理", items: [{ icon: "🏭", label: "供应商列表", hash: "#/vendors" }] }, { section: "系统设置", items: [{ icon: "📁", label: "分类管理", hash: "#/settings/categories" }, { icon: "🏷️", label: "标签管理", hash: "#/settings/tags" }, { icon: "📋", label: "参数模板", hash: "#/settings/templates" }, { icon: "👥", label: "用户管理", hash: "#/settings/users" }] }];
+      if (currentRole === "sales") return [{ section: "产品管理", items: [{ icon: "📦", label: "产品列表", hash: "#/sales/products" }, { icon: "⚖️", label: "产品对比", hash: "#/sales/compare" }] }];
+      return [];
+    }
+
+    function renderTopbar() {
+      if (!state.currentUser) return "";
+      var currentUser = state.currentUser, isClientMode = state.isClientMode;
+      var logoHash = currentUser.role === "sales" ? "#/sales/products" : "#/products";
+      var html = '<div class="topbar' + (isClientMode ? " client-mode-active" : "") + '">';
+      html += '<div class="topbar-left">';
+      html += '<div class="topbar-menu-toggle" onclick="toggleSidebar()">☰</div>';
+      html += '<div class="topbar-logo" onclick="navigate(\'' + logoHash + '\')">SMS</div>';
+      if (isClientMode) html += '<div class="topbar-client-badge">👁 客户演示模式</div>';
+      html += '</div>';
+      html += '<div class="topbar-right">';
+      html += '<button class="topbar-client-mode' + (isClientMode ? " active" : "") + '" onclick="toggleClientMode()">' + (isClientMode ? "🔒 退出演示模式" : "👁 客户演示模式") + '</button>';
+      html += '<div class="topbar-user"><div class="topbar-avatar" style="background: ' + currentUser.avatarBg + '">' + currentUser.avatar + '</div><div><div class="topbar-username">' + currentUser.realName + '</div><div class="topbar-role">' + (currentUser.role === "admin" ? "管理员" : "业务员") + '</div></div></div>';
+      html += '<button class="topbar-logout" onclick="logout()">退出</button>';
+      html += '</div></div>';
+      return html;
+    }
+
+    function renderSidebar() {
+      if (!state.currentUser) return "";
+      var menus = getSidebarMenus();
+      var hash = window.location.hash;
+      var html = '<div class="sidebar' + (state.sidebarOpen ? " active" : "") + '">';
+      menus.forEach(function(m) {
+        html += '<div class="sidebar-section"><div class="sidebar-section-title">' + m.section + '</div>';
+        m.items.forEach(function(i) {
+          html += '<div class="sidebar-menu-item' + (hash === i.hash ? " active" : "") + '" onclick="navigate(\'' + i.hash + '\'); state.sidebarOpen = false; router();"><span>' + i.icon + '</span><span>' + i.label + '</span></div>';
+        });
+        html += '</div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function renderLayout(content) { var app = document.getElementById("app"); var loggedIn = !!state.currentUser; app.innerHTML = (loggedIn ? renderTopbar() : "") + (loggedIn ? renderSidebar() : "") + '<div class="main-content' + (loggedIn ? "" : " no-sidebar full-width") + '">' + content + '</div>'; }
+
+    function renderLogin() {
+      document.getElementById("app").innerHTML = '<div class="login-container"><div class="login-brand"><div class="login-brand-logo">SMS</div><div class="login-brand-title">外贸小家电供应商管理系统</div><div class="login-brand-subtitle">Supplier Management System</div></div><div class="login-form-section"><div class="login-form-wrapper"><div class="login-form-title">欢迎登录</div><form onsubmit="event.preventDefault(); handleLogin();"><div class="form-group"><label class="form-label">用户名</label><input type="text" id="loginUsername" class="form-input" placeholder="请输入用户名" required></div><div class="form-group"><label class="form-label">密码</label><input type="password" id="loginPassword" class="form-input" placeholder="请输入密码" required><div id="loginError" class="form-error" style="display: none;"></div></div><button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">登录</button></form><div class="login-test-accounts"><div class="login-test-accounts-title">测试账号</div><div class="login-test-account"><span>管理员: admin</span><span>密码: 123456</span></div><div class="login-test-account"><span>业务员: sales</span><span>密码: 123456</span></div></div></div></div></div>';
+    }
+
+    function handleLogin() { var u = document.getElementById("loginUsername").value; var p = document.getElementById("loginPassword").value; var err = login(u, p); if (err) { var errEl = document.getElementById("loginError"); errEl.textContent = err; errEl.style.display = "block"; } }
+
+    function renderProductList() {
+      var hash = window.location.hash;
+      var mode = "admin";
+      if (hash.indexOf("#/sales/") === 0) mode = "sales";
+      if (hash.indexOf("#/client/") === 0) mode = "client";
+      var products = db.products.map(function(p) { return filterByRole(p, "product"); });
+      if (state.filters.search) { var s = state.filters.search.toLowerCase(); products = products.filter(function(p) { return p.name.toLowerCase().indexOf(s) !== -1 || p.sku.toLowerCase().indexOf(s) !== -1; }); }
+      if (state.filters.categoryId) products = products.filter(function(p) { return p.categoryId === parseInt(state.filters.categoryId); });
+
+      var comparePath = mode === "client" ? "#/client/compare" : mode === "sales" ? "#/sales/compare" : "#/compare";
+
+      var html = '<div class="filter-bar"><div class="filter-row"><div class="filter-item flex-1"><label class="form-label">搜索</label><input type="text" class="form-input" placeholder="产品名称或SKU" value="' + state.filters.search + '" oninput="state.filters.search = this.value; router();"></div><div class="filter-item"><label class="form-label">分类</label><select class="form-select" onchange="state.filters.categoryId = this.value; router();"><option value="">全部分类</option>';
+      db.categories.filter(function(c) { return c.parentId !== null; }).forEach(function(c) { html += '<option value="' + c.id + '"' + (state.filters.categoryId == c.id ? " selected" : "") + '>' + c.name + '</option>'; });
+      html += '</select></div><div class="filter-item" style="display: flex; align-items: flex-end;"><button class="btn btn-default" onclick="state.filters = { search: \'\', categoryId: \'\' }; router();">重置</button></div></div></div>';
+
+      html += '<div class="card"><div class="card-header"><div><div class="card-title">产品列表</div><div class="card-subtitle">共 ' + products.length + ' 个产品' + (state.selectedProductIds.length > 0 ? '，已选 ' + state.selectedProductIds.length + ' 个' : '') + '</div></div><div class="card-actions">';
+      if (mode === "admin") html += '<button class="btn btn-primary" onclick="navigate(\'#/product-edit\')">➕ 新增产品</button>';
+      html += '<button class="btn btn-default"' + (state.selectedProductIds.length < 2 || state.selectedProductIds.length > 8 ? " disabled" : "") + ' onclick="navigate(\'' + comparePath + '\')">⚖️ 开始对比 (' + state.selectedProductIds.length + ')</button>';
+      if (state.selectedProductIds.length > 0) html += '<button class="btn btn-default" onclick="state.selectedProductIds = []; router();">清空选择</button>';
+      html += '</div></div></div>';
+
+      html += '<div class="grid grid-3">';
+      products.forEach(function(p) {
+        var selected = state.selectedProductIds.indexOf(p.id) !== -1;
+        var detailPath = hash.indexOf("client") !== -1 ? "#/client/product/" : hash.indexOf("sales") !== -1 ? "#/sales/product/" : "#/product/";
+        html += '<div class="product-card' + (selected ? ' product-card-selected' : '') + '">';
+        html += '<input type="checkbox" class="product-card-checkbox"' + (selected ? " checked" : "") + ' onchange="toggleProductSelection(' + p.id + ')" onclick="event.stopPropagation();">';
+        html += '<div class="product-card-image" onclick="navigate(\'' + detailPath + p.id + '\')">' + (p.media && p.media[0] ? p.media[0].url : "📦") + '</div>';
+        html += '<div class="product-card-body" onclick="navigate(\'' + detailPath + p.id + '\')">';
+        html += '<div class="product-card-name">' + p.name + '</div><div class="product-card-sku">SKU: ' + p.sku + '</div><div class="product-card-tags">';
+        (p.tags || []).forEach(function(t) { var c = getTagColor(t); html += '<span class="tag" style="background: ' + c.bgColor + '; color: ' + c.color + '">' + t + '</span>'; });
+        html += '</div>';
+        if (mode !== "client" && p.marketGuidePrice) html += '<div class="product-card-price"><span class="product-card-price-label">指导价</span><span class="product-card-price-value">' + formatPrice(p.marketGuidePrice) + '</span></div>';
+        if (mode === "admin" && p.factoryPrice) html += '<div class="product-card-price"><span class="product-card-price-label">出厂价 🔒</span><span class="product-card-price-value" style="color: #FF4D4F;">' + formatPrice(p.factoryPrice) + '</span></div>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+      renderLayout(html);
+    }
+
+    function toggleProductSelection(id) { var idx = state.selectedProductIds.indexOf(id); if (idx > -1) state.selectedProductIds.splice(idx, 1); else if (state.selectedProductIds.length < 8) state.selectedProductIds.push(id); router(); }
+
+    function renderProductDetail(id) {
+      var product = getProductById(id);
+      if (!product) return render404();
+      var p = filterByRole(product, "product");
+      var cat = getCategoryById(p.categoryId);
+      var vendor = p.vendorId ? getVendorById(p.vendorId) : null;
+      var template = cat && cat.templateKey ? getTemplateByKey(cat.templateKey) : null;
+      var hash = window.location.hash;
+      var mode = "admin", backPath = "#/products";
+      if (hash.indexOf("#/sales/") === 0) { mode = "sales"; backPath = "#/sales/products"; }
+      if (hash.indexOf("#/client/") === 0) { mode = "client"; backPath = "#/client/products"; }
+
+      var images = p.media ? p.media.filter(function(m) { return m.type === 'image'; }) : [];
+      var videos = p.media ? p.media.filter(function(m) { return m.type === 'video'; }) : [];
+      var isInCompare = state.selectedProductIds.indexOf(p.id) !== -1;
+      var comparePath = mode === "client" ? "#/client/compare" : mode === "sales" ? "#/sales/compare" : "#/compare";
+
+      var html = '<div class="card"><div class="card-header"><div><div class="card-title">' + p.name + '</div><div class="card-subtitle">SKU: ' + p.sku + '</div></div><div class="card-actions">';
+      html += '<button class="btn btn-default" onclick="navigate(\'' + backPath + '\')">← 返回列表</button>';
+      if (mode === "admin") html += '<button class="btn btn-primary" onclick="navigate(\'#/product-edit/' + id + '\')">✏️ 编辑</button>';
+      html += '<button class="btn ' + (isInCompare ? 'btn-danger' : 'btn-default') + '" onclick="toggleProductSelection(' + p.id + '); router();">' + (isInCompare ? '✓ 已加入对比' : '⚖️ 加入对比') + '</button>';
+      if (state.selectedProductIds.length >= 2) html += '<button class="btn btn-primary" onclick="navigate(\'' + comparePath + '\')">查看对比 (' + state.selectedProductIds.length + ')</button>';
+      html += '</div></div>';
+      if (state.selectedProductIds.length > 0) {
+        html += '<div style="padding: 12px 24px; background: #E6F7FF; border-bottom: 1px solid #91D5FF;"><span style="color: #1890FF;">📋 已选择 ' + state.selectedProductIds.length + ' 个产品对比：</span>';
+        state.selectedProductIds.forEach(function(pid) { var sp = getProductById(pid); if (sp) html += '<span class="tag tag-blue" style="margin-left: 8px;">' + sp.name + ' <a onclick="toggleProductSelection(' + pid + '); router();" style="cursor: pointer; margin-left: 4px;">×</a></span>'; });
+        html += '</div>';
+      }
+      html += '<div class="card-body"><div style="display: grid; grid-template-columns: 400px 1fr; gap: 32px;"><div>';
+      html += '<div class="media-main">' + (images.length > 0 ? images[0].url : "📦") + '</div>';
+      if (images.length > 1) {
+        html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px;">';
+        images.forEach(function(img, idx) { html += '<div style="background: #F5F6FA; border-radius: 8px; padding: 12px; text-align: center; cursor: pointer;' + (idx === 0 ? ' border: 2px solid #1890FF;' : '') + '"><div style="font-size: 32px;">' + img.url + '</div><div style="font-size: 11px; color: #8C8C8C; margin-top: 4px;">' + (img.title || '图片') + '</div></div>'; });
+        html += '</div>';
+      }
+      if (videos.length > 0) {
+        html += '<div style="margin-top: 16px;"><div style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">🎬 产品视频 (' + videos.length + ')</div>';
+        videos.forEach(function(v) { html += '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; padding: 16px; text-align: center; color: #fff; margin-bottom: 8px;"><div style="font-size: 32px;">' + v.url + '</div><div style="font-size: 13px; margin-top: 4px;">' + (v.title || '视频') + '</div><button class="btn btn-sm" style="margin-top: 8px; background: rgba(255,255,255,0.2); border: 1px solid #fff; color: #fff;">▶ 播放</button></div>'; });
+        html += '</div>';
+      }
+      html += '</div><div>';
+      html += '<div class="info-grid"><div class="info-item"><div class="info-label">品牌</div><div class="info-value">' + p.brand + '</div></div><div class="info-item"><div class="info-label">分类</div><div class="info-value">' + (cat ? cat.name : "-") + '</div></div><div class="info-item"><div class="info-label">状态</div><div class="info-value">' + p.status + '</div></div>';
+      if (mode === "admin" && vendor) html += '<div class="info-item"><div class="info-label">供应商</div><div class="info-value"><a onclick="navigate(\'#/vendor/' + vendor.id + '\')" style="cursor:pointer">' + vendor.name + '</a></div></div>';
+      html += '</div>';
+      if (p.tags && p.tags.length) { html += '<div style="margin: 16px 0;">'; p.tags.forEach(function(t) { var c = getTagColor(t); html += '<span class="tag" style="background: ' + c.bgColor + '; color: ' + c.color + '">' + t + '</span> '; }); html += '</div>'; }
+      if (mode !== "client" && (p.marketGuidePrice || p.factoryPrice)) {
+        html += '<div class="section"><div class="section-title">价格信息</div>';
+        if (p.marketGuidePrice) html += '<div class="alert alert-info"><div style="font-weight: bold;">市场指导价</div><div style="font-size: 24px; color: #1890FF; font-weight: bold; margin-top: 8px;">' + formatPrice(p.marketGuidePrice) + '</div></div>';
+        if (mode === "admin" && p.factoryPrice) html += '<div class="alert alert-error"><div style="font-weight: bold;">🔒 出厂价(机密)</div><div style="font-size: 24px; color: #FF4D4F; font-weight: bold; margin-top: 8px;">' + formatPrice(p.factoryPrice) + '</div><div style="font-size: 12px; color: #8C8C8C; margin-top: 4px;">MOQ: ' + p.moq + ' pcs</div></div>';
+        html += '</div>';
+      }
+      if (mode !== "client" && p.benchmarkProduct) html += '<div class="section"><div class="section-title">🎯 竞品对标</div><div class="alert alert-info"><div style="font-weight: bold;">对标产品: ' + p.benchmarkProduct + '</div>' + (p.benchmarkContext ? '<div style="margin-top: 8px;">' + p.benchmarkContext + '</div>' : "") + '</div></div>';
+      if (mode === "admin" && p.salesRestrictions && p.salesRestrictions.length) { html += '<div class="section"><div class="section-title">🚫 销售限制</div><div class="alert alert-warning">'; p.salesRestrictions.forEach(function(r) { html += '<div style="padding: 4px 0;"><strong>' + r.country + '</strong> - ' + r.client + '</div>'; }); html += '</div></div>'; }
+      if (template) {
+        html += '<div class="section"><div class="section-title">技术参数</div><div class="info-grid">';
+        template.parameters.forEach(function(param) { var spec = p.specs ? p.specs[param.fieldKey] : null; var val = "—"; if (spec != null) val = param.type === "number" ? spec.value + " " + spec.unit : spec; html += '<div class="info-item"><div class="info-label">' + param.label + '</div><div class="info-value">' + val + '</div></div>'; });
+        html += '</div></div>';
+      }
+      if (p.datasheets && p.datasheets.length) {
+        html += '<div class="section"><div class="section-title">📄 规格书与文档</div><div style="display: flex; gap: 12px; flex-wrap: wrap;">';
+        p.datasheets.forEach(function(doc) { html += '<div style="background: #F5F6FA; border-radius: 8px; padding: 16px; text-align: center; min-width: 120px;"><div style="font-size: 32px;">' + (doc.icon || '📄') + '</div><div style="font-size: 13px; font-weight: bold; margin-top: 8px;">' + doc.name + '</div><div style="font-size: 11px; color: #8C8C8C; margin-top: 4px;">' + (doc.filename || 'document.pdf') + '</div><button class="btn btn-sm btn-default" style="margin-top: 8px;">⬇️ 下载</button></div>'; });
+        html += '</div></div>';
+      }
+      if (p.certifications && p.certifications.length) {
+        html += '<div class="section"><div class="section-title">📜 认证信息</div><div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">';
+        p.certifications.forEach(function(c) { html += '<div style="background: #F6FFED; border: 1px solid #B7EB8F; border-radius: 8px; padding: 16px;"><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 24px;">' + (c.fileIcon || '📜') + '</span><div><div style="font-weight: bold; color: #52C41A;">' + c.name + '</div><div style="font-size: 12px; color: #8C8C8C;">' + (c.code || '-') + '</div></div></div>' + (mode === "admin" ? '<div style="margin-top: 8px; font-size: 11px;"><span class="tag ' + (c.public ? 'tag-green' : 'tag-gray') + '">' + (c.public ? '公开' : '内部') + '</span></div>' : '') + '</div>'; });
+        html += '</div></div>';
+      }
+      if (mode !== "client" && p.internalNotes && p.internalNotes.collaboration && p.internalNotes.collaboration.length) { html += '<div class="section"><div class="section-title">💡 协作备注</div>'; p.internalNotes.collaboration.forEach(function(n) { html += '<div class="alert alert-info"><div style="font-weight: bold;">' + n.icon + ' ' + n.title + '</div><div style="margin-top: 4px;">' + n.content + '</div></div>'; }); html += '</div>'; }
+      if (mode === "admin" && p.internalNotes && p.internalNotes.sensitive && p.internalNotes.sensitive.length) { html += '<div class="section"><div class="section-title">🔒 机密信息</div>'; p.internalNotes.sensitive.forEach(function(n) { html += '<div class="alert alert-error"><div style="font-weight: bold;">' + n.icon + ' ' + n.title + '</div><div style="margin-top: 4px;">' + n.content + '</div></div>'; }); html += '</div>'; }
+      html += '</div></div></div></div>';
+      renderLayout(html);
+    }
+
+    function renderProductEdit(id) {
+      var product = id ? getProductById(id) : null;
+      var isNew = !product;
+      var currentCategoryId = product ? product.categoryId : null;
+      state.editingProductMedia = product && product.media ? JSON.parse(JSON.stringify(product.media)) : [];
+      state.editingProductDatasheets = product && product.datasheets ? JSON.parse(JSON.stringify(product.datasheets)) : [];
+      state.editingProductCerts = product && product.certifications ? JSON.parse(JSON.stringify(product.certifications)) : [];
+      var html = '<div class="card"><div class="card-header"><div class="card-title">' + (isNew ? "新增产品" : "编辑产品") + '</div><div class="card-actions"><button class="btn btn-default" onclick="navigate(\'#/products\')">← 返回列表</button></div></div><div class="card-body"><form onsubmit="event.preventDefault(); saveProduct(' + (id || 'null') + ');">';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label form-label-required">产品名称</label><input type="text" id="productName" class="form-input" value="' + (product ? product.name : '') + '" required></div><div class="form-group"><label class="form-label form-label-required">SKU</label><input type="text" id="productSku" class="form-input" value="' + (product ? product.sku : '') + '" required></div></div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label form-label-required">品牌</label><input type="text" id="productBrand" class="form-input" value="' + (product ? product.brand : '') + '"></div><div class="form-group"><label class="form-label form-label-required">分类</label><select id="productCategory" class="form-select" onchange="updateProductSpecsFields()"><option value="">请选择分类</option>';
+      db.categories.filter(function(c) { return c.parentId !== null; }).forEach(function(c) { html += '<option value="' + c.id + '"' + (product && product.categoryId === c.id ? " selected" : "") + '>' + c.name + '</option>'; });
+      html += '</select></div></div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label">供应商</label><select id="productVendor" class="form-select"><option value="">请选择供应商</option>';
+      db.vendors.forEach(function(v) { html += '<option value="' + v.id + '"' + (product && product.vendorId === v.id ? " selected" : "") + '>' + v.name + '</option>'; });
+      html += '</select></div><div class="form-group"><label class="form-label">状态</label><select id="productStatus" class="form-select"><option value="在售"' + (product && product.status === "在售" ? " selected" : "") + '>在售</option><option value="停售"' + (product && product.status === "停售" ? " selected" : "") + '>停售</option><option value="开发中"' + (product && product.status === "开发中" ? " selected" : "") + '>开发中</option></select></div></div>';
+      html += '<div class="form-row-3"><div class="form-group"><label class="form-label">出厂价 (USD)</label><input type="number" step="0.01" id="productFactoryPrice" class="form-input" value="' + (product && product.factoryPrice ? product.factoryPrice : '') + '"></div><div class="form-group"><label class="form-label">市场指导价 (USD)</label><input type="number" step="0.01" id="productMarketPrice" class="form-input" value="' + (product && product.marketGuidePrice ? product.marketGuidePrice : '') + '"></div><div class="form-group"><label class="form-label">MOQ</label><input type="number" id="productMoq" class="form-input" value="' + (product && product.moq ? product.moq : '') + '"></div></div>';
+      html += '<div class="form-group"><label class="form-label">标签</label><div style="display: flex; gap: 12px; flex-wrap: wrap;">';
+      db.tags.forEach(function(t) { html += '<label class="checkbox-item"><input type="checkbox" name="productTags" value="' + t.name + '"' + (product && product.tags && product.tags.indexOf(t.name) !== -1 ? " checked" : "") + '><span class="tag" style="background: ' + t.bgColor + '; color: ' + t.color + '">' + t.name + '</span></label>'; });
+      html += '</div></div>';
+      html += '<div id="productSpecsContainer">' + renderProductSpecsFields(currentCategoryId, product ? product.specs : null) + '</div>';
+      html += '<div class="section-title" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;"><span>📷 产品图片与视频</span><button type="button" class="btn btn-sm btn-primary" onclick="addProductMedia()">➕ 添加媒体</button></div>';
+      html += '<div id="productMediaContainer">' + renderProductMediaFields() + '</div>';
+      html += '<div class="section-title" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;"><span>📄 规格书与文档</span><button type="button" class="btn btn-sm btn-primary" onclick="addProductDatasheet()">➕ 添加文档</button></div>';
+      html += '<div id="productDatasheetsContainer">' + renderProductDatasheetsFields() + '</div>';
+      html += '<div class="section-title" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;"><span>📜 认证文件</span><button type="button" class="btn btn-sm btn-primary" onclick="addProductCert()">➕ 添加认证</button></div>';
+      html += '<div id="productCertsContainer">' + renderProductCertsFields() + '</div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label">对标产品</label><input type="text" id="productBenchmark" class="form-input" value="' + (product && product.benchmarkProduct ? product.benchmarkProduct : '') + '"></div><div class="form-group"><label class="form-label">对标说明</label><input type="text" id="productBenchmarkContext" class="form-input" value="' + (product && product.benchmarkContext ? product.benchmarkContext : '') + '"></div></div>';
+      html += '<div style="margin-top: 24px; display: flex; gap: 12px;"><button type="submit" class="btn btn-primary">💾 保存</button><button type="button" class="btn btn-default" onclick="navigate(\'#/products\')">取消</button></div></form></div></div>';
+      renderLayout(html);
+    }
+
+    function renderProductMediaFields() {
+      if (!state.editingProductMedia || state.editingProductMedia.length === 0) {
+        return '<div class="alert alert-info" style="margin: 12px 0;">暂无媒体文件，点击"添加媒体"上传图片或视频</div>';
+      }
+      var html = '<div style="margin-top: 12px;">';
+      state.editingProductMedia.forEach(function(media, index) {
+        html += '<div class="list-item" style="margin-bottom: 8px; padding: 12px;"><div style="flex: 1; display: grid; grid-template-columns: 50px 1fr 100px auto; gap: 12px; align-items: center;">';
+        html += '<div style="font-size: 28px; text-align: center;">' + (media.url || '📷') + '</div>';
+        html += '<input type="text" class="form-input" placeholder="图片/视频标题" value="' + (media.title || '') + '" onchange="updateProductMedia(' + index + ', \'title\', this.value)" style="font-size: 13px;">';
+        html += '<select class="form-select" onchange="updateProductMedia(' + index + ', \'type\', this.value)" style="font-size: 13px;"><option value="image"' + (media.type === 'image' ? ' selected' : '') + '>📷 图片</option><option value="video"' + (media.type === 'video' ? ' selected' : '') + '>🎬 视频</option></select>';
+        html += '<button type="button" class="btn btn-sm btn-danger" onclick="removeProductMedia(' + index + ')">删除</button>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function renderProductDatasheetsFields() {
+      if (!state.editingProductDatasheets || state.editingProductDatasheets.length === 0) {
+        return '<div class="alert alert-info" style="margin: 12px 0;">暂无规格书，点击"添加文档"上传规格书或手册</div>';
+      }
+      var html = '<div style="margin-top: 12px;">';
+      state.editingProductDatasheets.forEach(function(doc, index) {
+        html += '<div class="list-item" style="margin-bottom: 8px; padding: 12px;"><div style="flex: 1; display: grid; grid-template-columns: 40px 1fr 1fr auto; gap: 12px; align-items: center;">';
+        html += '<div style="font-size: 24px; text-align: center;">' + (doc.icon || '📄') + '</div>';
+        html += '<input type="text" class="form-input" placeholder="文档名称" value="' + (doc.name || '') + '" onchange="updateProductDatasheet(' + index + ', \'name\', this.value)" style="font-size: 13px;">';
+        html += '<input type="text" class="form-input" placeholder="文件名 (如: spec.pdf)" value="' + (doc.filename || '') + '" onchange="updateProductDatasheet(' + index + ', \'filename\', this.value)" style="font-size: 13px;">';
+        html += '<button type="button" class="btn btn-sm btn-danger" onclick="removeProductDatasheet(' + index + ')">删除</button>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function renderProductCertsFields() {
+      if (!state.editingProductCerts || state.editingProductCerts.length === 0) {
+        return '<div class="alert alert-info" style="margin: 12px 0;">暂无认证文件，点击"添加认证"录入认证信息</div>';
+      }
+      var html = '<div style="margin-top: 12px;">';
+      state.editingProductCerts.forEach(function(cert, index) {
+        html += '<div class="list-item" style="margin-bottom: 8px; padding: 12px;"><div style="flex: 1; display: grid; grid-template-columns: 40px 120px 1fr 80px auto; gap: 12px; align-items: center;">';
+        html += '<div style="font-size: 24px; text-align: center;">📜</div>';
+        html += '<input type="text" class="form-input" placeholder="认证名称" value="' + (cert.name || '') + '" onchange="updateProductCert(' + index + ', \'name\', this.value)" style="font-size: 13px;">';
+        html += '<input type="text" class="form-input" placeholder="证书编号" value="' + (cert.code || '') + '" onchange="updateProductCert(' + index + ', \'code\', this.value)" style="font-size: 13px;">';
+        html += '<label class="checkbox-item" style="font-size: 12px;"><input type="checkbox"' + (cert.public ? ' checked' : '') + ' onchange="updateProductCert(' + index + ', \'public\', this.checked)"><span>公开</span></label>';
+        html += '<button type="button" class="btn btn-sm btn-danger" onclick="removeProductCert(' + index + ')">删除</button>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function addProductMedia() {
+      var icons = ['📷', '🖼️', '🎬', '📹'];
+      state.editingProductMedia.push({ type: 'image', title: '', url: icons[Math.floor(Math.random() * 2)] });
+      document.getElementById("productMediaContainer").innerHTML = renderProductMediaFields();
+    }
+    function updateProductMedia(index, field, value) {
+      if (state.editingProductMedia[index]) {
+        state.editingProductMedia[index][field] = value;
+        if (field === 'type') { state.editingProductMedia[index].url = value === 'video' ? '🎬' : '📷'; document.getElementById("productMediaContainer").innerHTML = renderProductMediaFields(); }
+      }
+    }
+    function removeProductMedia(index) { state.editingProductMedia.splice(index, 1); document.getElementById("productMediaContainer").innerHTML = renderProductMediaFields(); }
+
+    function addProductDatasheet() {
+      state.editingProductDatasheets.push({ name: '', filename: '', icon: '📄' });
+      document.getElementById("productDatasheetsContainer").innerHTML = renderProductDatasheetsFields();
+    }
+    function updateProductDatasheet(index, field, value) { if (state.editingProductDatasheets[index]) state.editingProductDatasheets[index][field] = value; }
+    function removeProductDatasheet(index) { state.editingProductDatasheets.splice(index, 1); document.getElementById("productDatasheetsContainer").innerHTML = renderProductDatasheetsFields(); }
+
+    function addProductCert() {
+      state.editingProductCerts.push({ name: '', code: '', public: true, fileIcon: '📜' });
+      document.getElementById("productCertsContainer").innerHTML = renderProductCertsFields();
+    }
+    function updateProductCert(index, field, value) { if (state.editingProductCerts[index]) state.editingProductCerts[index][field] = value; }
+    function removeProductCert(index) { state.editingProductCerts.splice(index, 1); document.getElementById("productCertsContainer").innerHTML = renderProductCertsFields(); }
+
+    function renderProductSpecsFields(categoryId, existingSpecs) {
+      if (!categoryId) return '<div class="alert alert-info" style="margin: 16px 0;">请先选择分类以显示技术参数字段</div>';
+      var category = getCategoryById(parseInt(categoryId));
+      if (!category || !category.templateKey) return '<div class="alert alert-info" style="margin: 16px 0;">当前分类未关联参数模板</div>';
+      var template = getTemplateByKey(category.templateKey);
+      if (!template || !template.parameters || template.parameters.length === 0) return '<div class="alert alert-info" style="margin: 16px 0;">当前分类关联的模板暂无参数配置</div>';
+      var html = '<div class="section" style="margin: 24px 0; padding: 20px; background: #FAFAFA; border-radius: 8px;"><div class="section-title" style="margin-bottom: 16px;">📋 技术参数 (' + template.name + ')</div><div class="info-grid">';
+      template.parameters.forEach(function(param) {
+        var existingValue = existingSpecs && existingSpecs[param.fieldKey];
+        var value = '';
+        if (existingValue) {
+          value = param.type === 'number' ? (existingValue.value || '') : existingValue;
+        }
+        html += '<div class="form-group"><label class="form-label' + (param.required ? ' form-label-required' : '') + '">' + param.label + (param.unit ? ' (' + param.unit + ')' : '') + '</label>';
+        if (param.type === 'number') {
+          html += '<input type="number" step="any" class="form-input" id="spec_' + param.fieldKey + '" data-field="' + param.fieldKey + '" data-type="number" data-unit="' + (param.unit || '') + '" value="' + value + '"' + (param.required ? ' required' : '') + '>';
+        } else {
+          html += '<input type="text" class="form-input" id="spec_' + param.fieldKey + '" data-field="' + param.fieldKey + '" data-type="text" value="' + value + '"' + (param.required ? ' required' : '') + '>';
+        }
+        html += '</div>';
+      });
+      html += '</div></div>';
+      return html;
+    }
+
+    function updateProductSpecsFields() {
+      var categoryId = document.getElementById("productCategory").value;
+      document.getElementById("productSpecsContainer").innerHTML = renderProductSpecsFields(categoryId, null);
+    }
+
+    function collectProductSpecs() {
+      var specs = {};
+      var specInputs = document.querySelectorAll('[id^="spec_"]');
+      specInputs.forEach(function(input) {
+        var fieldKey = input.getAttribute('data-field');
+        var type = input.getAttribute('data-type');
+        var unit = input.getAttribute('data-unit');
+        var value = input.value;
+        if (value) {
+          if (type === 'number') {
+            specs[fieldKey] = { value: parseFloat(value), unit: unit || '' };
+          } else {
+            specs[fieldKey] = value;
+          }
+        }
+      });
+      return specs;
+    }
+
+    function saveProduct(id) {
+      var name = document.getElementById("productName").value;
+      var sku = document.getElementById("productSku").value;
+      var brand = document.getElementById("productBrand").value;
+      var categoryId = parseInt(document.getElementById("productCategory").value) || null;
+      var vendorId = parseInt(document.getElementById("productVendor").value) || null;
+      var status = document.getElementById("productStatus").value;
+      var factoryPrice = parseFloat(document.getElementById("productFactoryPrice").value) || null;
+      var marketGuidePrice = parseFloat(document.getElementById("productMarketPrice").value) || null;
+      var moq = parseInt(document.getElementById("productMoq").value) || null;
+      var benchmarkProduct = document.getElementById("productBenchmark").value;
+      var benchmarkContext = document.getElementById("productBenchmarkContext").value;
+      var tags = Array.from(document.querySelectorAll('input[name="productTags"]:checked')).map(function(cb) { return cb.value; });
+      var specs = collectProductSpecs();
+      var media = state.editingProductMedia.filter(function(m) { return m.title; });
+      var datasheets = state.editingProductDatasheets.filter(function(d) { return d.name; });
+      var certifications = state.editingProductCerts.filter(function(c) { return c.name; });
+      if (id) { var product = getProductById(id); if (product) { Object.assign(product, { name: name, sku: sku, brand: brand, categoryId: categoryId, vendorId: vendorId, status: status, factoryPrice: factoryPrice, marketGuidePrice: marketGuidePrice, moq: moq, benchmarkProduct: benchmarkProduct, benchmarkContext: benchmarkContext, tags: tags, specs: specs, media: media, datasheets: datasheets, certifications: certifications }); showToast("产品更新成功！"); } }
+      else { var newProduct = { id: getNextId(db.products), name: name, sku: sku, brand: brand, categoryId: categoryId, vendorId: vendorId, status: status, factoryPrice: factoryPrice, marketGuidePrice: marketGuidePrice, moq: moq, benchmarkProduct: benchmarkProduct, benchmarkContext: benchmarkContext, tags: tags, media: media.length > 0 ? media : [{ type: "image", title: "产品图", url: "📦" }], datasheets: datasheets, specs: specs, certifications: certifications, salesRestrictions: [], internalNotes: { collaboration: [], sensitive: [] } }; db.products.push(newProduct); showToast("产品创建成功！"); }
+      state.editingProductMedia = []; state.editingProductDatasheets = []; state.editingProductCerts = [];
+      navigate("#/products");
+    }
+
+    function renderProductCompare() {
+      var hash = window.location.hash;
+      var mode = "admin", backPath = "#/products";
+      if (hash.indexOf("#/sales/") === 0) { mode = "sales"; backPath = "#/sales/products"; }
+      if (hash.indexOf("#/client/") === 0) { mode = "client"; backPath = "#/client/products"; }
+      var products = state.selectedProductIds.map(function(id) { var p = getProductById(id); return p ? filterByRole(p, "product") : null; }).filter(function(p) { return p; });
+      if (products.length === 0) { renderLayout('<div class="card"><div class="card-body"><div class="placeholder-page"><div class="placeholder-icon">⚖️</div><div class="placeholder-title">产品对比</div><div class="placeholder-desc">还没有选择对比产品，请返回列表选择2-8个产品</div><div class="placeholder-actions"><button class="btn btn-primary" onclick="navigate(\'' + backPath + '\')">← 返回列表</button></div></div></div></div>'); return; }
+      var paramsMap = {};
+      products.forEach(function(p) { var cat = getCategoryById(p.categoryId); var tpl = cat && cat.templateKey ? getTemplateByKey(cat.templateKey) : null; if (tpl) tpl.parameters.forEach(function(param) { if (!paramsMap[param.fieldKey]) paramsMap[param.fieldKey] = param; }); });
+
+      var html = '<div class="card"><div class="card-header"><div><div class="card-title">产品对比</div><div class="card-subtitle">正在对比 ' + products.length + ' 个产品</div></div><div class="card-actions"><button class="btn btn-default" onclick="navigate(\'' + backPath + '\')">← 返回列表</button><button class="btn btn-default" onclick="state.selectedProductIds = []; navigate(\'' + backPath + '\')">🗑️ 清空对比</button></div></div><div class="card-body"><div class="compare-container"><table class="compare-table"><thead><tr><th style="min-width: 150px;">参数</th>';
+      products.forEach(function(p) { html += '<th><div class="compare-product-header"><div class="compare-product-icon">' + (p.media && p.media[0] ? p.media[0].url : "📦") + '</div><div class="compare-product-name">' + p.name + '</div><div class="compare-product-sku">' + p.sku + '</div><div class="compare-remove" onclick="removeFromCompare(' + p.id + ')">移除</div></div></th>'; });
+      html += '</tr></thead><tbody>';
+      if (mode !== "client") { html += '<tr style="background: #FFF7E6;"><td><strong>市场指导价</strong></td>'; products.forEach(function(p) { html += '<td style="text-align: center; font-size: 18px; font-weight: bold; color: #1890FF;">' + (p.marketGuidePrice ? formatPrice(p.marketGuidePrice) : "—") + '</td>'; }); html += '</tr>'; }
+      if (mode === "admin") { html += '<tr style="background: #FFF1F0;"><td><strong>🔒 出厂价</strong></td>'; products.forEach(function(p) { html += '<td style="text-align: center; font-size: 18px; font-weight: bold; color: #FF4D4F;">' + (p.factoryPrice ? formatPrice(p.factoryPrice) : "—") + '</td>'; }); html += '</tr>'; html += '<tr style="background: #FFF1F0;"><td><strong>🔒 MOQ</strong></td>'; products.forEach(function(p) { html += '<td style="text-align: center;">' + (p.moq ? p.moq + " pcs" : "—") + '</td>'; }); html += '</tr>'; }
+      if (mode !== "client") { html += '<tr style="background: #E6F7FF;"><td><strong>🎯 对标产品</strong></td>'; products.forEach(function(p) { html += '<td style="text-align: center;">' + (p.benchmarkProduct || "—") + '</td>'; }); html += '</tr>'; }
+      Object.keys(paramsMap).forEach(function(key) { var param = paramsMap[key]; html += '<tr><td><strong>' + param.label + '</strong></td>'; products.forEach(function(p) { var spec = p.specs ? p.specs[param.fieldKey] : null; var val = "—"; if (spec != null) val = param.type === "number" ? spec.value + " " + spec.unit : spec; html += '<td style="text-align: center;">' + val + '</td>'; }); html += '</tr>'; });
+      html += '</tbody></table></div></div></div>';
+      renderLayout(html);
+    }
+
+    function removeFromCompare(id) { var idx = state.selectedProductIds.indexOf(id); if (idx > -1) state.selectedProductIds.splice(idx, 1); router(); }
+
+    function renderVendorList() {
+      var avgRating = db.vendors.reduce(function(a, v) { return a + v.rating; }, 0) / db.vendors.length;
+      var avgLeadTime = Math.round(db.vendors.reduce(function(a, v) { return a + v.avgLeadTime; }, 0) / db.vendors.length);
+      var html = '<div class="stat-cards"><div class="stat-card"><div class="stat-card-icon">🏭</div><div class="stat-card-value">' + db.vendors.length + '</div><div class="stat-card-label">供应商总数</div></div><div class="stat-card"><div class="stat-card-icon">📦</div><div class="stat-card-value">' + db.products.length + '</div><div class="stat-card-label">产品总数</div></div><div class="stat-card"><div class="stat-card-icon">⭐</div><div class="stat-card-value">' + avgRating.toFixed(1) + '</div><div class="stat-card-label">平均评分</div></div><div class="stat-card"><div class="stat-card-icon">📅</div><div class="stat-card-value">' + avgLeadTime + '</div><div class="stat-card-label">平均交期(天)</div></div></div>';
+      html += '<div class="card"><div class="card-header"><div><div class="card-title">供应商列表</div><div class="card-subtitle">共 ' + db.vendors.length + ' 家供应商</div></div><div class="card-actions"><button class="btn btn-primary" onclick="navigate(\'#/vendor-edit\')">➕ 新增供应商</button></div></div></div>';
+      html += '<div class="grid grid-3">';
+      db.vendors.forEach(function(v) {
+        html += '<div class="vendor-card" onclick="navigate(\'#/vendor/' + v.id + '\')"><div class="vendor-card-header"><div class="vendor-card-icon">' + v.icon + '</div><div class="vendor-card-name">' + v.name + '</div></div><div class="vendor-card-body"><div class="vendor-card-info"><div class="vendor-card-info-item"><span>📍</span><span>' + v.location.city + '</span></div><div class="vendor-card-info-item"><span>⭐</span><span class="vendor-card-rating">';
+        for (var i = 0; i < 5; i++) html += i < v.rating ? "★" : "☆";
+        html += '</span></div><div class="vendor-card-info-item"><span>📦</span><span>' + v.productCount + ' 个产品</span></div><div class="vendor-card-info-item"><span>🤝</span><span>合作 ' + v.cooperationYears + ' 年</span></div></div><div class="vendor-card-tags">';
+        v.mainCategories.slice(0, 3).forEach(function(c) { html += '<span class="tag tag-blue">' + c + '</span>'; });
+        html += '</div></div></div>';
+      });
+      html += '</div>';
+      renderLayout(html);
+    }
+
+    function renderVendorDetail(id) {
+      var vendor = getVendorById(id);
+      if (!vendor) return render404();
+      var vendorProducts = db.products.filter(function(p) { return p.vendorId === vendor.id; });
+      var html = '<div class="card"><div class="card-header"><div><div class="card-title">' + vendor.icon + ' ' + vendor.name + '</div><div class="card-subtitle">成立于 ' + vendor.established + ' 年 · 合作 ' + vendor.cooperationYears + ' 年</div></div><div class="card-actions"><button class="btn btn-default" onclick="navigate(\'#/vendors\')">← 返回列表</button><button class="btn btn-primary" onclick="navigate(\'#/vendor-edit/' + id + '\')">✏️ 编辑</button></div></div><div class="card-body">';
+      var stars = ""; for (var i = 0; i < 5; i++) stars += i < vendor.rating ? "★" : "☆";
+      html += '<div class="section"><div class="section-title">基本信息</div><div class="info-grid"><div class="info-item"><div class="info-label">公司全称</div><div class="info-value">' + vendor.name + '</div></div><div class="info-item"><div class="info-label">评分</div><div class="info-value" style="color: #FAAD14;">' + stars + '</div></div><div class="info-item"><div class="info-label">所在地区</div><div class="info-value">' + vendor.location.province + ' ' + vendor.location.city + ' ' + vendor.location.district + '</div></div><div class="info-item"><div class="info-label">详细地址</div><div class="info-value">' + vendor.address + '</div></div><div class="info-item"><div class="info-label">平均交期</div><div class="info-value">' + vendor.avgLeadTime + ' 天</div></div><div class="info-item"><div class="info-label">产品数量</div><div class="info-value">' + vendor.productCount + ' 个</div></div></div></div>';
+      html += '<div class="section"><div class="section-title">🔒 机密信息 (仅管理员可见)</div><div class="alert alert-warning"><div class="info-grid"><div class="info-item"><div class="info-label">法人代表</div><div class="info-value">' + vendor.adminOnly.legalPerson + '</div></div><div class="info-item"><div class="info-label">注册资本</div><div class="info-value">' + formatMoney(vendor.adminOnly.capitalCNY) + '</div></div><div class="info-item"><div class="info-label">员工规模</div><div class="info-value">' + vendor.adminOnly.employeesRange.min + '-' + vendor.adminOnly.employeesRange.max + ' 人</div></div><div class="info-item"><div class="info-label">联系人</div><div class="info-value">' + vendor.adminOnly.contact.person + ' (' + vendor.adminOnly.contact.position + ')</div></div><div class="info-item"><div class="info-label">电话</div><div class="info-value">' + vendor.adminOnly.contact.phone + '</div></div><div class="info-item"><div class="info-label">手机</div><div class="info-value">' + vendor.adminOnly.contact.mobile + '</div></div><div class="info-item"><div class="info-label">邮箱</div><div class="info-value">' + vendor.adminOnly.contact.email + '</div></div></div></div></div>';
+      html += '<div class="section"><div class="section-title">主营类目</div><div style="display: flex; gap: 8px; flex-wrap: wrap;">'; vendor.mainCategories.forEach(function(c) { html += '<span class="tag tag-blue">' + c + '</span>'; }); html += '</div></div>';
+      html += '<div class="section"><div class="section-title">合作品牌</div><div style="display: flex; gap: 8px; flex-wrap: wrap;">'; vendor.cooperatedBrands.forEach(function(b) { html += '<span class="tag tag-purple">' + b + '</span>'; }); html += '</div></div>';
+      html += '<div class="section"><div class="section-title">工厂认证</div><div style="display: flex; gap: 8px; flex-wrap: wrap;">'; vendor.factoryCerts.forEach(function(c) { html += '<span class="tag tag-green">' + c + '</span>'; }); html += '</div></div>';
+      html += '<div class="section"><div class="section-title">产品合规经验</div><div style="display: flex; gap: 8px; flex-wrap: wrap;">'; vendor.productComplianceExperience.forEach(function(c) { html += '<span class="tag tag-cyan">' + c + '</span>'; }); html += '</div></div>';
+      if (vendor.media && vendor.media.length > 0) {
+        var images = vendor.media.filter(function(m) { return m.type === 'image'; });
+        var videos = vendor.media.filter(function(m) { return m.type === 'video'; });
+        html += '<div class="section"><div class="section-title">📷 工厂图片 (' + images.length + ')</div><div class="grid grid-4">';
+        images.forEach(function(m) { html += '<div style="background: #F5F6FA; border-radius: 8px; padding: 20px; text-align: center;"><div style="font-size: 64px; margin-bottom: 8px;">' + m.url + '</div><div style="font-size: 13px; color: #595959;">' + m.title + '</div></div>'; });
+        html += '</div></div>';
+        if (videos.length > 0) {
+          html += '<div class="section"><div class="section-title">🎬 工厂视频 (' + videos.length + ')</div><div class="grid grid-3">';
+          videos.forEach(function(m) { html += '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; padding: 24px; text-align: center; color: #fff;"><div style="font-size: 48px; margin-bottom: 8px;">' + m.url + '</div><div style="font-size: 14px;">' + m.title + '</div><button class="btn btn-default" style="margin-top: 12px; background: rgba(255,255,255,0.2); border-color: #fff; color: #fff;">▶ 播放视频</button></div>'; });
+          html += '</div></div>';
+        }
+      }
+      html += '<div class="section"><div class="section-title">供应产品 (' + vendorProducts.length + ')</div><div class="grid grid-4">';
+      vendorProducts.forEach(function(p) { html += '<div class="product-card" onclick="navigate(\'#/product/' + p.id + '\')"><div class="product-card-image" style="height: 120px; font-size: 48px;">' + (p.media && p.media[0] ? p.media[0].url : "📦") + '</div><div class="product-card-body"><div class="product-card-name" style="font-size: 14px;">' + p.name + '</div><div class="product-card-sku">' + p.sku + '</div></div></div>'; });
+      html += '</div></div></div></div>';
+      renderLayout(html);
+    }
+
+    function renderVendorEdit(id) {
+      var vendor = id ? getVendorById(id) : null;
+      var isNew = !vendor;
+      var html = '<div class="card"><div class="card-header"><div class="card-title">' + (isNew ? "新增供应商" : "编辑供应商") + '</div><div class="card-actions"><button class="btn btn-default" onclick="navigate(\'#/vendors\')">← 返回列表</button></div></div><div class="card-body"><form onsubmit="event.preventDefault(); saveVendor(' + (id || 'null') + ');">';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label form-label-required">公司名称</label><input type="text" id="vendorName" class="form-input" value="' + (vendor ? vendor.name : '') + '" required></div><div class="form-group"><label class="form-label">评分</label><select id="vendorRating" class="form-select">';
+      for (var r = 1; r <= 5; r++) html += '<option value="' + r + '"' + (vendor && vendor.rating === r ? " selected" : "") + '>' + r + ' 星</option>';
+      html += '</select></div></div>';
+      html += '<div class="form-row-3"><div class="form-group"><label class="form-label">省份</label><input type="text" id="vendorProvince" class="form-input" value="' + (vendor && vendor.location ? vendor.location.province : '') + '"></div><div class="form-group"><label class="form-label">城市</label><input type="text" id="vendorCity" class="form-input" value="' + (vendor && vendor.location ? vendor.location.city : '') + '"></div><div class="form-group"><label class="form-label">区县</label><input type="text" id="vendorDistrict" class="form-input" value="' + (vendor && vendor.location ? vendor.location.district : '') + '"></div></div>';
+      html += '<div class="form-group"><label class="form-label">详细地址</label><input type="text" id="vendorAddress" class="form-input" value="' + (vendor ? vendor.address : '') + '"></div>';
+      html += '<div class="form-row-3"><div class="form-group"><label class="form-label">成立年份</label><input type="number" id="vendorEstablished" class="form-input" value="' + (vendor ? vendor.established : '') + '"></div><div class="form-group"><label class="form-label">合作年限</label><input type="number" id="vendorCoopYears" class="form-input" value="' + (vendor ? vendor.cooperationYears : '') + '"></div><div class="form-group"><label class="form-label">平均交期(天)</label><input type="number" id="vendorLeadTime" class="form-input" value="' + (vendor ? vendor.avgLeadTime : '') + '"></div></div>';
+      html += '<div class="section-title" style="margin-top: 24px;">机密联系信息</div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label">法人代表</label><input type="text" id="vendorLegalPerson" class="form-input" value="' + (vendor && vendor.adminOnly ? vendor.adminOnly.legalPerson : '') + '"></div><div class="form-group"><label class="form-label">注册资本(元)</label><input type="number" id="vendorCapital" class="form-input" value="' + (vendor && vendor.adminOnly ? vendor.adminOnly.capitalCNY : '') + '"></div></div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label">联系人</label><input type="text" id="vendorContactPerson" class="form-input" value="' + (vendor && vendor.adminOnly && vendor.adminOnly.contact ? vendor.adminOnly.contact.person : '') + '"></div><div class="form-group"><label class="form-label">职位</label><input type="text" id="vendorContactPosition" class="form-input" value="' + (vendor && vendor.adminOnly && vendor.adminOnly.contact ? vendor.adminOnly.contact.position : '') + '"></div></div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label">电话</label><input type="text" id="vendorContactPhone" class="form-input" value="' + (vendor && vendor.adminOnly && vendor.adminOnly.contact ? vendor.adminOnly.contact.phone : '') + '"></div><div class="form-group"><label class="form-label">手机</label><input type="text" id="vendorContactMobile" class="form-input" value="' + (vendor && vendor.adminOnly && vendor.adminOnly.contact ? vendor.adminOnly.contact.mobile : '') + '"></div></div>';
+      html += '<div class="form-group"><label class="form-label">邮箱</label><input type="email" id="vendorContactEmail" class="form-input" value="' + (vendor && vendor.adminOnly && vendor.adminOnly.contact ? vendor.adminOnly.contact.email : '') + '"></div>';
+      state.editingVendorMedia = vendor && vendor.media ? JSON.parse(JSON.stringify(vendor.media)) : [];
+      html += '<div class="section-title" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;"><span>📷 图片与视频</span><button type="button" class="btn btn-sm btn-primary" onclick="addVendorMedia()">➕ 添加媒体</button></div>';
+      html += '<div id="vendorMediaContainer">' + renderVendorMediaFields() + '</div>';
+      html += '<div style="margin-top: 24px; display: flex; gap: 12px;"><button type="submit" class="btn btn-primary">💾 保存</button><button type="button" class="btn btn-default" onclick="navigate(\'#/vendors\')">取消</button></div></form></div></div>';
+      renderLayout(html);
+    }
+
+    function renderVendorMediaFields() {
+      if (!state.editingVendorMedia || state.editingVendorMedia.length === 0) {
+        return '<div class="alert alert-info" style="margin-top: 12px;">暂无媒体，点击"添加媒体"按钮上传图片或视频</div>';
+      }
+      var html = '<div style="margin-top: 12px;">';
+      state.editingVendorMedia.forEach(function(media, index) {
+        html += '<div class="list-item" style="margin-bottom: 8px; padding: 12px;">';
+        html += '<div style="flex: 1; display: grid; grid-template-columns: 60px 1fr 120px auto; gap: 12px; align-items: center;">';
+        html += '<div style="font-size: 32px; text-align: center;">' + (media.url || '📷') + '</div>';
+        html += '<input type="text" class="form-input" placeholder="标题描述" value="' + (media.title || '') + '" onchange="updateVendorMedia(' + index + ', \'title\', this.value)" style="font-size: 13px;">';
+        html += '<select class="form-select" onchange="updateVendorMedia(' + index + ', \'type\', this.value)" style="font-size: 13px;"><option value="image"' + (media.type === 'image' ? ' selected' : '') + '>📷 图片</option><option value="video"' + (media.type === 'video' ? ' selected' : '') + '>🎬 视频</option></select>';
+        html += '<button type="button" class="btn btn-sm btn-danger" onclick="removeVendorMedia(' + index + ')">删除</button>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function addVendorMedia() {
+      var icons = ['🏭', '⚙️', '🔧', '🔬', '💡', '📦', '🎬'];
+      var randomIcon = icons[Math.floor(Math.random() * icons.length)];
+      state.editingVendorMedia.push({ type: 'image', title: '', url: randomIcon });
+      document.getElementById("vendorMediaContainer").innerHTML = renderVendorMediaFields();
+    }
+
+    function updateVendorMedia(index, field, value) {
+      if (state.editingVendorMedia[index]) {
+        state.editingVendorMedia[index][field] = value;
+        if (field === 'type') {
+          state.editingVendorMedia[index].url = value === 'video' ? '🎬' : '🏭';
+          document.getElementById("vendorMediaContainer").innerHTML = renderVendorMediaFields();
+        }
+      }
+    }
+
+    function removeVendorMedia(index) {
+      state.editingVendorMedia.splice(index, 1);
+      document.getElementById("vendorMediaContainer").innerHTML = renderVendorMediaFields();
+    }
+
+    function saveVendor(id) {
+      var name = document.getElementById("vendorName").value;
+      var rating = parseInt(document.getElementById("vendorRating").value);
+      var province = document.getElementById("vendorProvince").value;
+      var city = document.getElementById("vendorCity").value;
+      var district = document.getElementById("vendorDistrict").value;
+      var address = document.getElementById("vendorAddress").value;
+      var established = parseInt(document.getElementById("vendorEstablished").value) || 2020;
+      var cooperationYears = parseInt(document.getElementById("vendorCoopYears").value) || 1;
+      var avgLeadTime = parseInt(document.getElementById("vendorLeadTime").value) || 30;
+      var legalPerson = document.getElementById("vendorLegalPerson").value;
+      var capitalCNY = parseInt(document.getElementById("vendorCapital").value) || 0;
+      var contactPerson = document.getElementById("vendorContactPerson").value;
+      var contactPosition = document.getElementById("vendorContactPosition").value;
+      var contactPhone = document.getElementById("vendorContactPhone").value;
+      var contactMobile = document.getElementById("vendorContactMobile").value;
+      var contactEmail = document.getElementById("vendorContactEmail").value;
+      var media = state.editingVendorMedia.filter(function(m) { return m.title; });
+      var vendorData = { name: name, icon: "🏭", rating: rating, established: established, cooperationYears: cooperationYears, avgLeadTime: avgLeadTime, address: address, location: { province: province, city: city, district: district }, mainCategories: [], cooperatedBrands: [], factoryCerts: [], productComplianceExperience: [], productCount: 0, media: media, adminOnly: { legalPerson: legalPerson, capitalCNY: capitalCNY, employeesRange: { min: 50, max: 100 }, contact: { person: contactPerson, position: contactPosition, phone: contactPhone, mobile: contactMobile, email: contactEmail } } };
+      if (id) { var vendor = getVendorById(id); if (vendor) { Object.assign(vendor, vendorData); showToast("供应商更新成功！"); } }
+      else { vendorData.id = getNextId(db.vendors); db.vendors.push(vendorData); showToast("供应商创建成功！"); }
+      state.editingVendorMedia = [];
+      navigate("#/vendors");
+    }
+
+    function renderSettings(key) {
+      var tabs = [{ key: "categories", label: "📁 分类管理" }, { key: "tags", label: "🏷️ 标签管理" }, { key: "templates", label: "📋 参数模板" }, { key: "users", label: "👥 用户管理" }];
+      var content = "";
+      if (key === "categories") content = renderCategoriesSettings();
+      else if (key === "tags") content = renderTagsSettings();
+      else if (key === "templates") content = renderTemplatesSettings();
+      else if (key === "users") content = renderUsersSettings();
+      var html = '<div class="card"><div class="card-header"><div class="card-title">⚙️ 系统设置</div></div><div class="card-body"><div class="tabs">';
+      tabs.forEach(function(t) { html += '<div class="tab' + (key === t.key ? " active" : "") + '" onclick="navigate(\'#/settings/' + t.key + '\')">' + t.label + '</div>'; });
+      html += '</div>' + content + '</div></div>';
+      renderLayout(html);
+    }
+
+    function renderCategoriesSettings() {
+      var parentCategories = db.categories.filter(function(c) { return c.parentId === null; });
+      var html = '<div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;"><div class="card-subtitle">管理产品分类层级结构</div><button class="btn btn-primary" onclick="openCategoryModal()">➕ 新增分类</button></div>';
+      parentCategories.forEach(function(parent) {
+        var children = db.categories.filter(function(c) { return c.parentId === parent.id; });
+        html += '<div class="list-item"><div class="list-item-content"><div style="font-weight: bold; font-size: 16px;">📁 ' + parent.name + '</div><div style="color: #8C8C8C; font-size: 13px; margin-top: 4px;">排序: ' + parent.sortOrder + ' · ' + (parent.enabled ? "✅ 启用" : "❌ 禁用") + '</div></div><div class="list-item-actions"><button class="btn btn-sm btn-default" onclick="openCategoryModal(' + parent.id + ')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteCategory(' + parent.id + ')">删除</button></div></div>';
+        children.forEach(function(child) { html += '<div class="list-item list-item-indent"><div class="list-item-content"><div style="font-weight: 500;">└ ' + child.name + '</div><div style="color: #8C8C8C; font-size: 13px; margin-top: 4px;">排序: ' + child.sortOrder + ' · 模板: ' + (child.templateKey || "无") + ' · ' + (child.enabled ? "✅ 启用" : "❌ 禁用") + '</div></div><div class="list-item-actions"><button class="btn btn-sm btn-default" onclick="openCategoryModal(' + child.id + ')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteCategory(' + child.id + ')">删除</button></div></div>'; });
+      });
+      return html;
+    }
+
+    function renderTagsSettings() {
+      var html = '<div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;"><div class="card-subtitle">管理产品标签和可见性</div><button class="btn btn-primary" onclick="openTagModal()">➕ 新增标签</button></div>';
+      db.tags.forEach(function(tag) { html += '<div class="list-item"><div class="list-item-content"><div style="display: flex; align-items: center; gap: 12px;"><span class="tag" style="background: ' + tag.bgColor + '; color: ' + tag.color + '">' + tag.name + '</span><span style="color: #8C8C8C; font-size: 13px;">分组: ' + tag.group + '</span></div><div style="color: #8C8C8C; font-size: 13px; margin-top: 8px;">可见: ' + tag.visibleTo.join(", ") + ' · ' + (tag.enabled ? "✅ 启用" : "❌ 禁用") + '</div></div><div class="list-item-actions"><button class="btn btn-sm btn-default" onclick="openTagModal(' + tag.id + ')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteTag(' + tag.id + ')">删除</button></div></div>'; });
+      return html;
+    }
+
+    function renderTemplatesSettings() {
+      var html = '<div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;"><div class="card-subtitle">管理产品参数模板</div><button class="btn btn-primary" onclick="openTemplateModal()">➕ 新增模板</button></div>';
+      db.templates.forEach(function(tpl) { html += '<div class="list-item"><div class="list-item-content"><div style="font-weight: bold;">' + tpl.name + '</div><div style="color: #8C8C8C; font-size: 13px; margin-top: 4px;">Key: ' + tpl.templateKey + ' · ' + tpl.parameters.length + ' 个参数 · ' + (tpl.enabled ? "✅ 启用" : "❌ 禁用") + '</div><div style="margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap;">' + tpl.parameters.map(function(p) { return '<span class="tag tag-gray">' + p.label + ' (' + (p.unit || '-') + ')</span>'; }).join("") + '</div></div><div class="list-item-actions"><button class="btn btn-sm btn-default" onclick="openTemplateModal(' + tpl.id + ')">编辑</button><button class="btn btn-sm btn-danger" onclick="deleteTemplate(' + tpl.id + ')">删除</button></div></div>'; });
+      return html;
+    }
+
+    function renderUsersSettings() {
+      var html = '<div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;"><div class="card-subtitle">管理系统用户账号</div><button class="btn btn-primary" onclick="openUserModal()">➕ 新增用户</button></div><div class="table-wrapper"><table><thead><tr><th>头像</th><th>用户名</th><th>姓名</th><th>角色</th><th>电话</th><th>邮箱</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+      db.users.forEach(function(u) { html += '<tr><td><div class="topbar-avatar" style="background: ' + u.avatarBg + '">' + u.avatar + '</div></td><td>' + u.username + '</td><td>' + u.realName + '</td><td><span class="tag ' + (u.role === 'admin' ? 'tag-purple' : 'tag-blue') + '">' + (u.role === 'admin' ? '管理员' : '业务员') + '</span></td><td>' + (u.phone || '-') + '</td><td>' + (u.email || '-') + '</td><td><span class="tag ' + (u.status === 'active' ? 'tag-green' : 'tag-gray') + '">' + (u.status === 'active' ? '启用' : '禁用') + '</span></td><td><button class="btn btn-sm btn-default" onclick="openUserModal(' + u.id + ')">编辑</button> <button class="btn btn-sm btn-danger" onclick="deleteUser(' + u.id + ')">删除</button></td></tr>'; });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function openCategoryModal(id) {
+      var cat = id ? getCategoryById(id) : null;
+      state.editingItem = cat; state.editingType = "category";
+      document.getElementById("editModalTitle").textContent = cat ? "编辑分类" : "新增分类";
+      var html = '<div class="form-group"><label class="form-label form-label-required">分类名称</label><input type="text" id="editCatName" class="form-input" value="' + (cat ? cat.name : '') + '"></div>';
+      html += '<div class="form-group"><label class="form-label">上级分类</label><select id="editCatParent" class="form-select"><option value="">无 (一级分类)</option>';
+      db.categories.filter(function(c) { return c.parentId === null && c.id !== id; }).forEach(function(c) { html += '<option value="' + c.id + '"' + (cat && cat.parentId === c.id ? " selected" : "") + '>' + c.name + '</option>'; });
+      html += '</select></div><div class="form-row"><div class="form-group"><label class="form-label">排序</label><input type="number" id="editCatSort" class="form-input" value="' + (cat ? cat.sortOrder : 1) + '"></div><div class="form-group"><label class="form-label">模板Key</label><input type="text" id="editCatTemplate" class="form-input" value="' + (cat && cat.templateKey ? cat.templateKey : '') + '"></div></div>';
+      html += '<div class="form-group"><label class="checkbox-item"><input type="checkbox" id="editCatEnabled"' + (cat === null || cat.enabled !== false ? " checked" : "") + '><span>启用</span></label></div>';
+      document.getElementById("editModalBody").innerHTML = html;
+      document.getElementById("editModal").classList.add("active");
+    }
+
+    function openTagModal(id) {
+      var tag = id ? db.tags.find(function(t) { return t.id === id; }) : null;
+      state.editingItem = tag; state.editingType = "tag";
+      document.getElementById("editModalTitle").textContent = tag ? "编辑标签" : "新增标签";
+      var html = '<div class="form-row"><div class="form-group"><label class="form-label form-label-required">标签名称</label><input type="text" id="editTagName" class="form-input" value="' + (tag ? tag.name : '') + '"></div><div class="form-group"><label class="form-label">分组</label><select id="editTagGroup" class="form-select"><option value="feature"' + (tag && tag.group === 'feature' ? ' selected' : '') + '>功能特性</option><option value="strategy"' + (tag && tag.group === 'strategy' ? ' selected' : '') + '>策略</option><option value="status"' + (tag && tag.group === 'status' ? ' selected' : '') + '>状态</option><option value="certification"' + (tag && tag.group === 'certification' ? ' selected' : '') + '>认证</option></select></div></div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label">颜色</label><input type="color" id="editTagColor" class="form-input" value="' + (tag ? tag.color : '#1890FF') + '" style="height: 40px;"></div><div class="form-group"><label class="form-label">背景色</label><input type="color" id="editTagBgColor" class="form-input" value="' + (tag ? tag.bgColor : '#E6F7FF') + '" style="height: 40px;"></div></div>';
+      html += '<div class="form-group"><label class="form-label">可见性</label><div style="display: flex; gap: 16px;"><label class="checkbox-item"><input type="checkbox" name="editTagVisible" value="admin"' + (tag === null || (tag.visibleTo && tag.visibleTo.indexOf('admin') !== -1) ? ' checked' : '') + '> 管理员</label><label class="checkbox-item"><input type="checkbox" name="editTagVisible" value="sales"' + (tag === null || (tag.visibleTo && tag.visibleTo.indexOf('sales') !== -1) ? ' checked' : '') + '> 业务员</label><label class="checkbox-item"><input type="checkbox" name="editTagVisible" value="client"' + (tag && tag.visibleTo && tag.visibleTo.indexOf('client') !== -1 ? ' checked' : '') + '> 客户</label></div></div>';
+      html += '<div class="form-group"><label class="checkbox-item"><input type="checkbox" id="editTagEnabled"' + (tag === null || tag.enabled !== false ? " checked" : "") + '><span>启用</span></label></div>';
+      document.getElementById("editModalBody").innerHTML = html;
+      document.getElementById("editModal").classList.add("active");
+    }
+
+    function openTemplateModal(id) {
+      var tpl = id ? db.templates.find(function(t) { return t.id === id; }) : null;
+      state.editingItem = tpl; state.editingType = "template";
+      state.editingParams = tpl ? JSON.parse(JSON.stringify(tpl.parameters)) : [];
+      document.getElementById("editModalTitle").textContent = tpl ? "编辑模板" : "新增模板";
+      var html = '<div class="form-row"><div class="form-group"><label class="form-label form-label-required">模板名称</label><input type="text" id="editTplName" class="form-input" value="' + (tpl ? tpl.name : '') + '"></div><div class="form-group"><label class="form-label form-label-required">模板Key</label><input type="text" id="editTplKey" class="form-input" value="' + (tpl ? tpl.templateKey : '') + '"></div></div>';
+      html += '<div class="form-group"><label class="checkbox-item"><input type="checkbox" id="editTplEnabled"' + (tpl === null || tpl.enabled !== false ? " checked" : "") + '><span>启用</span></label></div>';
+      html += '<div class="section-title" style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;"><span>参数列表</span><button type="button" class="btn btn-sm btn-primary" onclick="addTemplateParam()">➕ 添加参数</button></div>';
+      html += '<div id="templateParamsContainer">' + renderTemplateParams() + '</div>';
+      document.getElementById("editModalBody").innerHTML = html;
+      document.getElementById("editModal").classList.add("active");
+    }
+
+    function renderTemplateParams() {
+      if (!state.editingParams || state.editingParams.length === 0) {
+        return '<div class="alert alert-info" style="margin-top: 12px;">暂无参数，点击"添加参数"按钮创建新参数</div>';
+      }
+      var html = '<div style="margin-top: 12px;">';
+      state.editingParams.forEach(function(param, index) {
+        html += '<div class="list-item" style="margin-bottom: 8px; padding: 12px;">';
+        html += '<div style="flex: 1; display: grid; grid-template-columns: repeat(5, 1fr) auto; gap: 8px; align-items: center;">';
+        html += '<input type="text" class="form-input" placeholder="字段Key" value="' + (param.fieldKey || '') + '" onchange="updateTemplateParam(' + index + ', \'fieldKey\', this.value)" style="font-size: 13px;">';
+        html += '<input type="text" class="form-input" placeholder="显示名称" value="' + (param.label || '') + '" onchange="updateTemplateParam(' + index + ', \'label\', this.value)" style="font-size: 13px;">';
+        html += '<select class="form-select" onchange="updateTemplateParam(' + index + ', \'type\', this.value)" style="font-size: 13px;"><option value="number"' + (param.type === 'number' ? ' selected' : '') + '>数字</option><option value="text"' + (param.type === 'text' ? ' selected' : '') + '>文本</option></select>';
+        html += '<input type="text" class="form-input" placeholder="单位" value="' + (param.unit || '') + '" onchange="updateTemplateParam(' + index + ', \'unit\', this.value)" style="font-size: 13px;">';
+        html += '<label class="checkbox-item" style="font-size: 13px;"><input type="checkbox"' + (param.required ? ' checked' : '') + ' onchange="updateTemplateParam(' + index + ', \'required\', this.checked)"><span>必填</span></label>';
+        html += '<button type="button" class="btn btn-sm btn-danger" onclick="removeTemplateParam(' + index + ')">删除</button>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function addTemplateParam() {
+      state.editingParams.push({ fieldKey: '', label: '', type: 'number', unit: '', required: false });
+      document.getElementById("templateParamsContainer").innerHTML = renderTemplateParams();
+    }
+
+    function updateTemplateParam(index, field, value) {
+      if (state.editingParams[index]) {
+        state.editingParams[index][field] = value;
+      }
+    }
+
+    function removeTemplateParam(index) {
+      state.editingParams.splice(index, 1);
+      document.getElementById("templateParamsContainer").innerHTML = renderTemplateParams();
+    }
+
+    function openUserModal(id) {
+      var user = id ? getUserById(id) : null;
+      state.editingItem = user; state.editingType = "user";
+      document.getElementById("editModalTitle").textContent = user ? "编辑用户" : "新增用户";
+      var html = '<div class="form-row"><div class="form-group"><label class="form-label form-label-required">用户名</label><input type="text" id="editUserUsername" class="form-input" value="' + (user ? user.username : '') + '"></div><div class="form-group"><label class="form-label form-label-required">姓名</label><input type="text" id="editUserRealName" class="form-input" value="' + (user ? user.realName : '') + '"></div></div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label">密码</label><input type="password" id="editUserPassword" class="form-input" placeholder="' + (user ? '留空则不修改' : '请输入密码') + '"></div><div class="form-group"><label class="form-label">角色</label><select id="editUserRole" class="form-select"><option value="admin"' + (user && user.role === 'admin' ? ' selected' : '') + '>管理员</option><option value="sales"' + (user && user.role === 'sales' ? ' selected' : '') + '>业务员</option></select></div></div>';
+      html += '<div class="form-row"><div class="form-group"><label class="form-label">电话</label><input type="text" id="editUserPhone" class="form-input" value="' + (user ? user.phone : '') + '"></div><div class="form-group"><label class="form-label">邮箱</label><input type="email" id="editUserEmail" class="form-input" value="' + (user ? user.email : '') + '"></div></div>';
+      html += '<div class="form-group"><label class="form-label">状态</label><select id="editUserStatus" class="form-select"><option value="active"' + (user && user.status === 'active' ? ' selected' : '') + '>启用</option><option value="inactive"' + (user && user.status === 'inactive' ? ' selected' : '') + '>禁用</option></select></div>';
+      document.getElementById("editModalBody").innerHTML = html;
+      document.getElementById("editModal").classList.add("active");
+    }
+
+    function closeEditModal() { document.getElementById("editModal").classList.remove("active"); state.editingItem = null; state.editingType = null; state.editingParams = []; }
+
+    function saveEdit() {
+      var type = state.editingType, item = state.editingItem;
+      if (type === "category") {
+        var name = document.getElementById("editCatName").value;
+        var parentId = document.getElementById("editCatParent").value ? parseInt(document.getElementById("editCatParent").value) : null;
+        var sortOrder = parseInt(document.getElementById("editCatSort").value) || 1;
+        var templateKey = document.getElementById("editCatTemplate").value || null;
+        var enabled = document.getElementById("editCatEnabled").checked;
+        if (item) Object.assign(item, { name: name, parentId: parentId, sortOrder: sortOrder, templateKey: templateKey, enabled: enabled });
+        else db.categories.push({ id: getNextId(db.categories), name: name, parentId: parentId, sortOrder: sortOrder, templateKey: templateKey, enabled: enabled });
+        showToast("分类保存成功！");
+      } else if (type === "tag") {
+        var name = document.getElementById("editTagName").value;
+        var group = document.getElementById("editTagGroup").value;
+        var color = document.getElementById("editTagColor").value;
+        var bgColor = document.getElementById("editTagBgColor").value;
+        var visibleTo = Array.from(document.querySelectorAll('input[name="editTagVisible"]:checked')).map(function(cb) { return cb.value; });
+        var enabled = document.getElementById("editTagEnabled").checked;
+        if (item) Object.assign(item, { name: name, group: group, color: color, bgColor: bgColor, visibleTo: visibleTo, enabled: enabled });
+        else db.tags.push({ id: getNextId(db.tags), name: name, group: group, color: color, bgColor: bgColor, visibleTo: visibleTo, applicableTo: ["product"], enabled: enabled });
+        showToast("标签保存成功！");
+      } else if (type === "template") {
+        var name = document.getElementById("editTplName").value;
+        var templateKey = document.getElementById("editTplKey").value;
+        var enabled = document.getElementById("editTplEnabled").checked;
+        var parameters = state.editingParams.filter(function(p) { return p.fieldKey && p.label; });
+        if (item) Object.assign(item, { name: name, templateKey: templateKey, enabled: enabled, parameters: parameters });
+        else db.templates.push({ id: getNextId(db.templates), name: name, templateKey: templateKey, enabled: enabled, parameters: parameters });
+        state.editingParams = [];
+        showToast("模板保存成功！");
+      } else if (type === "user") {
+        var username = document.getElementById("editUserUsername").value;
+        var realName = document.getElementById("editUserRealName").value;
+        var password = document.getElementById("editUserPassword").value;
+        var role = document.getElementById("editUserRole").value;
+        var phone = document.getElementById("editUserPhone").value;
+        var email = document.getElementById("editUserEmail").value;
+        var status = document.getElementById("editUserStatus").value;
+        if (item) { Object.assign(item, { username: username, realName: realName, role: role, phone: phone, email: email, status: status }); if (password) item.demoPassword = password; }
+        else { var avatar = realName.charAt(0); var colors = ["#1890FF", "#52C41A", "#FA8C16", "#722ED1", "#13C2C2"]; db.users.push({ id: getNextId(db.users), username: username, realName: realName, demoPassword: password || "123456", role: role, phone: phone, email: email, status: status, avatar: avatar, avatarBg: colors[db.users.length % colors.length] }); }
+        showToast("用户保存成功！");
+      }
+      closeEditModal(); router();
+    }
+
+    function deleteCategory(id) { if (!confirm("确定要删除这个分类吗？")) return; var idx = db.categories.findIndex(function(c) { return c.id === id; }); if (idx > -1) { db.categories.splice(idx, 1); db.categories = db.categories.filter(function(c) { return c.parentId !== id; }); showToast("分类删除成功！"); router(); } }
+    function deleteTag(id) { if (!confirm("确定要删除这个标签吗？")) return; var idx = db.tags.findIndex(function(t) { return t.id === id; }); if (idx > -1) { db.tags.splice(idx, 1); showToast("标签删除成功！"); router(); } }
+    function deleteTemplate(id) { if (!confirm("确定要删除这个模板吗？")) return; var idx = db.templates.findIndex(function(t) { return t.id === id; }); if (idx > -1) { db.templates.splice(idx, 1); showToast("模板删除成功！"); router(); } }
+    function deleteUser(id) { if (!confirm("确定要删除这个用户吗？")) return; var idx = db.users.findIndex(function(u) { return u.id === id; }); if (idx > -1) { db.users.splice(idx, 1); showToast("用户删除成功！"); router(); } }
+
+    function render404() { var homePath = state.currentRole === "sales" ? "#/sales/products" : "#/products"; renderLayout('<div class="placeholder-page"><div class="placeholder-icon">❌</div><div class="placeholder-title">页面未找到</div><div class="placeholder-desc">404 - Not Found</div><div class="placeholder-actions"><button class="btn btn-primary" onclick="navigate(\'' + homePath + '\')">返回首页</button></div></div>'); }
+
+    window.addEventListener("hashchange", router);
+    window.addEventListener("load", router);
   </script>
 </body>
 </html>
